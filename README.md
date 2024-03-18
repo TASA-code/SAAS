@@ -8,6 +8,7 @@ while plotting groundtrack data.
 <p align="center">
   <img src="figure/OBRCS1_raise.gif" width="350">
   <img src="figure/propagate.gif" width="350">
+  <img src="figure/simulate.png" width="350">
 </p>
 
 
