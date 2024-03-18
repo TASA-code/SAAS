@@ -1,4 +1,4 @@
-function [vertices, faces] = TRITON_model()
+function [vertices, faces] = TRITON()
     
     % Define cube vertices
     vertices = [0.12 -0.12 -0.12;   % Vertex 1

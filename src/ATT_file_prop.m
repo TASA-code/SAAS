@@ -27,7 +27,7 @@
 
 
 
-function [] = ATT_file_prop(Q, Flag_View, Flag_Eclipse, GEO, sun_vec)
+function [] = ATT_file_prop(Q, Flag_View, Flag_Eclipse, GEO, sun_vec, dates)
     
     figure;
     fig1 = subplot(4,4,1:8);
@@ -37,6 +37,8 @@ function [] = ATT_file_prop(Q, Flag_View, Flag_Eclipse, GEO, sun_vec)
     LVLH(1);
     hold on;
     % [bq, bvec] = BLVLH();
+    time_text = text('Position', [1.2, 1.6, 0]);
+
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %  PRE-STEP #1 : Construct THRUSTER vector
@@ -122,6 +124,8 @@ function [] = ATT_file_prop(Q, Flag_View, Flag_Eclipse, GEO, sun_vec)
         % end
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        set(time_text, 'String', dates{i});
 
         view([-132.28 20.51])
         grid on; box on;
@@ -141,6 +145,7 @@ function [] = ATT_file_prop(Q, Flag_View, Flag_Eclipse, GEO, sun_vec)
         subplot(fig2);
         groundtrack(GEO(i,:),colour);
         hold on;
+
        
         drawnow;
         

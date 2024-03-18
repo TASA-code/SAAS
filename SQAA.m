@@ -7,6 +7,7 @@
 %   I.R.   : 2024.03.12
 %   V.2.1  : 2024.03.13
 %   V.2.2  : 2024.03.14
+%   V.3    : 2024.03.18
 %
 %
 %   Input:
@@ -29,12 +30,28 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [output, STR_TRACE] = SQAA(Q, component, Flag, other, string)
+function [output, STR_TRACE] = SQAA(Q, component, Flag, other, string, dates)
 
-    if Flag{1,1} == 1
-        ATT_file_prop(Q, Flag{1,2}, Flag{1,3}, other{1,1}, other{1,2});
-        output = [];
-        STR_TRACE = [];
+    if Flag{1,1} == 1 
+        if isempty(Q)
+            usr_input = input('No quaternion data detected, Define an orbit? (Y/N): ', 's');
+            choice = lower(usr_input);
+            switch choice
+                case 'y'
+                    [OE] = getinput();
+                    ATT_orbit_wiz(OE, dates);
+                    output = [];
+                    STR_TRACE = [];
+                case 'n'
+                    disp('exiting program...');
+            end
+        else
+            ATT_file_prop(Q, Flag{1,2}, Flag{1,3}, other{1,1}, other{1,2}, dates);
+            output = [];
+            STR_TRACE = [];
+        end
+        
+
 
     else
         % Create Initial State Figure
