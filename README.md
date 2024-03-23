@@ -1,6 +1,6 @@
-# Satellite Quaternion Attitude Animation
-## (SQAA v.1, pre-release v.2)
-Satellite Quaternion Attitude Animation (SQAA) is a tool to simulate rotation via quaternion, 
+# Satellite Attitude Animation and Simulator
+## (SAAS v.1, pre-release v.2)
+Satellite Attitude Animation and Simulator (SAAS) is a tool to simulate rotation via quaternion, 
 and has the capability of inputting on-orbit data to animate actual behaviour, 
 while plotting groundtrack data.
 

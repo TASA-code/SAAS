@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%   Satellite Attitude Visualisation/Animation (quaternion)
+%   Satellite Attitude Animation and Simulator (quaternion)
 %
 %   Cooper Chang Chien
 %
