@@ -30,7 +30,7 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [output, STR_TRACE] = SQAA(Q, component, Flag, other, string, dates)
+function [output, STR_TRACE] = SAAS(Q, component, Flag, other, string, dates)
 
     if Flag{1,1} == 1 
         if isempty(Q)
