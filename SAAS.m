@@ -55,7 +55,7 @@ function [output, STR_TRACE] = SAAS(Q, component, Flag, other, string, dates)
 
     else
         % Create Initial State Figure
-        initial(Flag{1,2});
+        initial_pos(Flag{1,2});
         [output, STR_TRACE] = ATT_sim(Q, component, Flag{1,2}, string);
 
     end

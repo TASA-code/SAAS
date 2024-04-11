@@ -1,4 +1,4 @@
-function [] = initial(flag)
+function [] = initial_pos(flag)
 
     figure;   
 
@@ -46,20 +46,20 @@ function [] = initial(flag)
     axis_limits = [-1 1 -1 1 -1 1 -1 1];
     view([42.77 34.77])
 
-    leg = legend("Body axis","LVLH.x","OBRCS_1", "OBRCS_2", ...
-        "RCSDM_1", "RCSDM_2", "STR", 'Location', 'southoutside', 'Orientation', 'horizontal');
+    legend("Body axis","LVLH.x","OBRCS_1", "OBRCS_2", ...
+        "RCSDM_1", "RCSDM_2", "STR", 'Location', 'eastoutside');
 
     if flag == 1
         axis_limits = [-2.25 2.25 -2.25 2.25 -1.5 1.5];
-        leg = legend(" Body axis","LVLH.x","OBRCS_1", "OBRCS_2", ...
-            "RCSDM_1", "RCSDM_2", "Earth Blockage", "STR", 'Location', 'southoutside', 'Orientation', 'horizontal');
+        legend(" Body axis","LVLH.x","OBRCS_1", "OBRCS_2", ...
+            "RCSDM_1", "RCSDM_2", "Earth Blockage", "STR", 'Location', 'eastoutside');
     end
 
 
     axis(axis_limits)
     set(gca, 'ZDir', 'reverse');
     set(gca, 'YDir', 'reverse');
-    leg.NumColumns = 3;
+    % leg.NumColumns = 3;
 
 
 end
