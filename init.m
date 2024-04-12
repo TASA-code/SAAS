@@ -32,21 +32,28 @@ function init()
     
     period = orbit*2*pi*sqrt(6878^3/398600);
     time = round(period/64);
+
+    [q_date, q_data] = import('fs7t_SE_SAAS_Q_2024050090000_2024051090000_A.txt', '%s%f%f%f%f');
     
-    data = importdata("data/fs7t_SE_Q_LVLH2BODY_2024050090000_2024051090000_A.xls");
-    q_data = data.data(2:16:time*16,1:4);
+    [lla_date, lla_data] = import('fs7t_SE_SAAS_LATLON_2024050090000_2024051090000_A.txt', '%s%f%f');
+
+    [sun_date, sun_data] = import('fs7t_SE_SAAS_SUN_2024050090000_2024051090000_A.txt', '%s%f%f%f');
+
+    [ecl_date, ecl_data] = import('fs7t_SE_SAAS_Eclipse_2024050090000_2024051090000_A.txt', '%s%f');
+%     data = importdata("data/fs7t_SE_Q_LVLH2BODY_2024050090000_2024051090000_A.xls");
+%     q_data = data.data(2:16:time*16,1:4);
     
-    GROUND = importdata("data/fs7t_SE_LON_LAT_2024050090000_2024051090000_A.xls");
-    dates = GROUND.textdata(1:time,1);
-    GEO(:,1) = GROUND.data(1:time,1); % latitude
-    GEO(:,2) = GROUND.data(1:time,2); % longitude
+%     GROUND = importdata("data/fs7t_SE_LON_LAT_2024050090000_2024051090000_A.xls");
+%     dates = GROUND.textdata(1:time,1);
+%     GEO(:,1) = GROUND.data(1:time,1); % latitude
+%     GEO(:,2) = GROUND.data(1:time,2); % longitude
     
     
-    SUN = importdata("data/fs7t_SE_SUN_VECTOR_2024050090000_2024051090000_A.xls");
-    sun_vec = [SUN.data(1:time,1), SUN.data(1:time,2), SUN.data(1:time,3)];
+%     SUN = importdata("data/fs7t_SE_SUN_VECTOR_2024050090000_2024051090000_A.xls");
+%     sun_vec = [SUN.data(1:time,1), SUN.data(1:time,2), SUN.data(1:time,3)];
     
-    ECP = importdata("data/fs7t_SE_ECLIPSE_2024050090000_2024051090000_A.xls");
-    Flag_Ecp = ECP.data(1:time,1);
+%     ECP = importdata("data/fs7t_SE_ECLIPSE_2024050090000_2024051090000_A.xls");
+    Flag_Ecp = ecl_data;
     
     
     
@@ -76,7 +83,7 @@ function init()
     %                                    1. OBRCS_1
     %                                    2. OBRCS_2
     %                                    3. RCSDM_1
-    %                                    4. RCSDM_2 (disable, default 3.)
+    %                                    4. RCSDM_2 (disable, default RCSDM_1)
     %                                    5. Star Tracker (on as default)
     %   @param Flag       -->  (1x3)     Flags defined in STEP #1 and eclipse
     %   @param other      --> 
@@ -93,18 +100,19 @@ function init()
     
     else
         % raising, OB1_part
-        q = [0.1600 0.7055 0.2057 0.6591];
+        % q = [0.1600 0.7055 0.2057 0.6591];
+        q = [pi/2 0 pi/2 0];
     
     end
     
     string = 'OBRCS TH1 Raising';
     component = 'OBRCS_1';
     Flag = {Flag_prop, Flag_View, Flag_Ecp};
-    other = {GEO, sun_vec};
+    other = {lla_data, sun_data};
     
     
     % MAIN
-    [~, ~] = SAAS(q, component, Flag, other, string, dates{1});
+    [~, ~] = SAAS(q, component, Flag, other, string, lla_date);
 
 
 end

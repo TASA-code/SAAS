@@ -18,6 +18,6 @@ function [OE] = getinput()
     theta_input = input('Enter true anomaly (deg): ', 's');
     theta = str2double(strsplit(theta_input));
 
-    OE = [a, e, i, RAAN, e, theta];
+    OE = [a, e, i, RAAN, w, theta];
 
 end

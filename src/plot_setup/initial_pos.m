@@ -34,7 +34,7 @@ function [] = initial_pos(flag)
     
 
     % Create simplified TRITON model
-    [vertices, faces] = TRITON();
+    [vertices, faces] = FS9_SAR();
     patch('Vertices', vertices, 'Faces', faces, 'FaceColor', '#708090', 'EdgeColor', 'k', 'LineWidth', 1.5);
 
 

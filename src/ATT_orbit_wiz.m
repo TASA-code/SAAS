@@ -2,7 +2,7 @@ function [] = ATT_orbit_wiz(OE, dates)
     
     fprintf('Simulation Propagating...\n')
     
-    global orbit;
+    global orbit; %#ok<GVMIS>
     % define physical constants
     
     mu_E = 3.986004418e14;     % Earth gravitational parameter (m^3/s^2)    
