@@ -1,20 +1,17 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%   SQAA ATT_prop.m
+%   SQAA ATT_file_prop.m
 %
 %   Cooper Chang Chien
 %
 %   Input:
-%     @param Q            :  (1x4)     Quaternion applied to target vector
-%     @param Flag_View    :  (state)   0: animate without earth view cone
-%                                      1: animate with earth view cone
-%     @param Flag_Eclipse :  (state)   0: Not Eclipse
-%                                      1: Eclipse
-%     @param GEO          :  (data)    Ground Track Data
-%     @param sun_vec      :  (data)    Sun vector
+%     @param sim      :  (struct)  Simulation setups
+%     @param model    :  (struct)  Model parameter
+%
 %
 %   Output:
-%     animation of vector rotation via single quaternion with satellite model 
+%     Animation of Satellite attitude based on trending data
+%       (attitude + groundtrack + eclipse + sun vector) 
 %
 %
 %   Copyright (C) System Engineering (SE), TASA - All Rights Reserved
@@ -26,68 +23,68 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
-function [] = ATT_file_prop(Q, Flag_View, Flag_Eclipse, GEO, sun_vec, dates)
+function [] = ATT_file_prop(sim, model)
     
+    Q = model.q_trend_data;
+
     figure;
     fig1 = subplot(4,4,1:8);
     fig2 = subplot(4,4,9:16);
 
     subplot(fig1);
     LVLH(1);
-    hold on;
     % [bq, bvec] = BLVLH();
+    hold on;
+
     time_text = text('Position', [1.2, 1.6, 0]);
 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %  PRE-STEP #1 : Construct THRUSTER vector
+    %  PRE-STEP #1 : Construct THRUSTER vector
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    [OBRCS1_DIR, OBRCS1_VEC] = OBRCS1();
-    [OBRCS2_DIR, OBRCS2_VEC] = OBRCS2();
-    [RCSDM1_DIR, RCSDM1_VEC] = RCSDM1();
-    [RCSDM2_DIR, RCSDM2_VEC] = RCSDM2();
-
-    % Store Thruster quaternion and vector
-    Thruster_q = {OBRCS1_DIR,OBRCS2_DIR,RCSDM1_DIR,RCSDM2_DIR};
-    Thruster_v = {OBRCS1_VEC,OBRCS2_VEC,RCSDM1_VEC,RCSDM2_VEC};
+    [COMP_DIR, COMP_VECTOR] = create_comp(model);
 
 
-    SUN = quiver3(0,0,0,sun_vec(1),sun_vec(2),sun_vec(3),'color','#EDB120', 'LineWidth', 3);
+    SUN_VEC = model.sun_data;
+    SUN = quiver3(0,0,0,SUN_VEC(1),SUN_VEC(2),SUN_VEC(3),'color','#EDB120', 'LineWidth', 2);
 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %  PRE-STEP #2 : Construct STR vector
+    %  PRE-STEP #2 : Construct STR vector
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    [STR_LOS, STR] = STR_coverage(Flag_View);
+    [STR_LOS, STR] = STR_coverage(sim.flag.view);
     cone_handle = [];
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %  PRE-STEP #3 : Create simplified TRITON model
+    %  PRE-STEP #3 : Create model
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    % Create simplified TRITON model
-    [vertices, faces] = TRITON();
-    h_cube = patch('Vertices', vertices, 'Faces', faces, 'FaceColor', '#708090', 'EdgeColor', 'k', 'LineWidth', 1.5);
+    vertices = model.CAD.vert;
+    faces = model.CAD.faces;
+    h_cube = patch('Vertices', vertices, 'Faces', faces, 'FaceColor', '#708090', 'EdgeColor', 'k', 'EdgeAlpha', 1, 'LineWidth', 2);
 
 
     for i = 1:length(Q)
 
-        subplot(fig1);        
-        SUN_VECTOR(SUN, sun_vec(i,:))
+        subplot(fig1);
 
-
-        for j = 1:4
-            update_vector(Q(i,:), Thruster_q{1,j}, Thruster_v{1,j}, 0.5);
-        end
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %  STEP #1 : Rotate COMP using quaternion
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        update_vector(Q(i,:), COMP_DIR, COMP_VECTOR, 0.5);
+        
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %  STEP #2 : Rotate STR using quaternion
+        %  STEP #2 : Rotate SUN_VECTOR using quaternion
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        SUN_VECTOR(SUN, SUN_VEC(i,:))
 
-        % Rotate STR vector
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %  STEP #3 : Rotate STR using quaternion
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         rotated_STR = update_vector(Q(i,:), STR_LOS, STR, 1);
         
         % Create cone for STR FOV
@@ -104,10 +101,8 @@ function [] = ATT_file_prop(Q, Flag_View, Flag_Eclipse, GEO, sun_vec, dates)
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %  STEP #3 : Rotate TRITON model using quaternion
+        %  STEP #4 : Rotate TRITON model using quaternion
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-        % Perform the rotation for TRITON
         q_temp = quaternion(Q(i,1), Q(i,2), Q(i,3), Q(i,4));
         R = rotmat(q_temp,'point'); 
 
@@ -115,8 +110,9 @@ function [] = ATT_file_prop(Q, Flag_View, Flag_Eclipse, GEO, sun_vec, dates)
         cube_vertices = ((R * (vertices' - center') + center'))';
         set(h_cube, 'Vertices', cube_vertices, 'Faces', faces);
 
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %  STEP #4 : Rotate Body axis (disable)
+        %  STEP #5 : Rotate Body axis (disable)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         % for k = 1:3   
@@ -124,8 +120,7 @@ function [] = ATT_file_prop(Q, Flag_View, Flag_Eclipse, GEO, sun_vec, dates)
         % end
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        set(time_text, 'String', dates{i});
+        set(time_text, 'String', datestr(model.lla_date(i)));
 
         view([-132.28 20.51])
         grid on; box on;
@@ -136,17 +131,16 @@ function [] = ATT_file_prop(Q, Flag_View, Flag_Eclipse, GEO, sun_vec, dates)
         xlabel('LVLH.X'); ylabel('LVLH.Y'); zlabel('LVLH.Z');
         title(string)
 
-        if Flag_Eclipse(i) == 1
+        if sim.flag.ecl(i) == 1
             colour = 'r';
         else
             colour = 'b';
         end
 
         subplot(fig2);
-        groundtrack(GEO(i,:),colour);
+        groundtrack(model.lla_data(i,:),colour);
         hold on;
 
-       
         drawnow;
         
     end

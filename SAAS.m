@@ -7,7 +7,8 @@
 %   I.R.   : 2024.03.12
 %   V.2.1  : 2024.03.13
 %   V.2.2  : 2024.03.14
-%   V.3    : 2024.03.18
+%   V.2.3  : 2024.03.18
+%   V.3.0  : 2024.04.17
 %
 %
 %   Input:
@@ -19,7 +20,7 @@
 %
 %
 %   Output:
-%     Details in ATT_file_prop.m and ATT_sim.m
+%     Details in ATT_sim.m, ATT_file_prop.m, and ATT_orbit_wiz.m
 %
 %
 %   Copyright (C) System Engineering (SE), TASA - All Rights Reserved
@@ -30,34 +31,22 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [output, STR_TRACE] = SAAS(Q, component, Flag, other, string, dates)
+% function [output, STR_TRACE] = SAAS(Q, component, Flag, other, string, dates)
+function [output, STR_TRACE] = SAAS(mode, sim, model)
+    
+    switch mode
+        case 1
+            [output, STR_TRACE] = ATT_sim(sim, model);
 
-    if Flag{1,1} == 1 
-        if isempty(Q)
-            usr_input = input('No quaternion data detected, Define an orbit? (Y/N): ', 's');
-            choice = lower(usr_input);
-            switch choice
-                case 'y'
-                    [OE] = getinput();
-                    ATT_orbit_wiz(OE, dates);
-                    output = [];
-                    STR_TRACE = [];
-                case 'n'
-                    disp('exiting program...');
-            end
-        else
-            ATT_file_prop(Q, Flag{1,2}, Flag{1,3}, other{1,1}, other{1,2}, dates);
+        case 2
+            ATT_file_prop(sim, model);
             output = [];
             STR_TRACE = [];
-        end
-        
 
-
-    else
-        % Create Initial State Figure
-        initial_pos(Flag{1,2});
-        [output, STR_TRACE] = ATT_sim(Q, component, Flag{1,2}, string);
-
+        case 3
+            ATT_orbit_wiz(sim, model);
+            output = [];
+            STR_TRACE = [];
     end
 
 end

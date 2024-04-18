@@ -27,26 +27,12 @@ function init()
     %  Import LVLH2BODY quaternion 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    global orbit; %#ok<GVMIS>
-    orbit = 2;
-    
-    period = orbit*2*pi*sqrt(6878^3/398600);
-    time = round(period/64);
-    
-    data = importdata("data/fs7t_SE_Q_LVLH2BODY_2024050090000_2024051090000_A.xls");
-    q_data = data.data(2:16:time*16,1:4);
-    
-    GROUND = importdata("data/fs7t_SE_LON_LAT_2024050090000_2024051090000_A.xls");
-    dates = GROUND.textdata(1:time,1);
-    GEO(:,1) = GROUND.data(1:time,1); % latitude
-    GEO(:,2) = GROUND.data(1:time,2); % longitude
-    
-    
-    SUN = importdata("data/fs7t_SE_SUN_VECTOR_2024050090000_2024051090000_A.xls");
-    sun_vec = [SUN.data(1:time,1), SUN.data(1:time,2), SUN.data(1:time,3)];
-    
-    ECP = importdata("data/fs7t_SE_ECLIPSE_2024050090000_2024051090000_A.xls");
-    Flag_Ecp = ECP.data(1:time,1);
+
+    [~, q_data]          = import('fs7t_SE_SAAS_Q_2024050090000_2024051090000_A.txt',  '%s%f%f%f%f');
+    [lla_date, lla_data] = import('fs7t_SE_SAAS_LATLON_2024050090000_2024051090000_A.txt', '%s%f%f');
+    [~, sun_data]        = import('fs7t_SE_SAAS_SUN_2024050090000_2024051090000_A.txt',  '%s%f%f%f');
+    [~, ecl_data]        = import('fs7t_SE_SAAS_Eclipse_2024050090000_2024051090000_A.txt',  '%s%f');
+
     
     
     
@@ -59,55 +45,76 @@ function init()
     %                            0 : No (use single quaternion)
     %                            1 : Yes, use sets of quaternion
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    sim = {};
+
+    OE = [7000 1e-5 97.97 0 0 0];
+
+    sim.orbit.OE     = OE;
+    sim.orbit.orbit  = 2;
+    sim.orbit.period = 2*pi*sqrt((sim.orbit.OE(1)*1000)^3/3.986004418e14);
+    sim.orbit.tspan  = [0 sim.orbit.orbit*sim.orbit.period];
+    sim.orbit.time   = round(sim.orbit.tspan(2)/64);
+
+
+    sim.flag.view = 0;
+    sim.flag.prop = 1;
+    sim.flag.ecl  = ecl_data;
+
     
-    Flag_View = 0;
-    
-    Flag_prop = 0;
-    
-    
-    
-    %% RESULT:%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% DEFINE MODEL:%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %  Run the ATTITUDE_animation function below to view the result
     %
     %  INPUT:
     %   @param Q          -->  (1x4)     Quaternion applied to target vector
     %   @param component  -->  (string)  Component wish to observe
-    %                                    List:
-    %                                    1. OBRCS_1
-    %                                    2. OBRCS_2
-    %                                    3. RCSDM_1
-    %                                    4. RCSDM_2 (disable, default 3.)
-    %                                    5. Star Tracker (on as default)
-    %   @param Flag       -->  (1x3)     Flags defined in STEP #1 and eclipse
-    %   @param other      --> 
-    %   @param string     -->  (string)  Desired plot name
     %
     %  OUTPUT:
     %   THR_TRACE  :  Selected thruster vector trace
     %   STR_TRACE  :  Star Tracker vector trace
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    q_data = q_data(2:16:sim.orbit.time*16,1:4);
+
+    % Create and Define model parameter
+    model = {};
+
+    model.name      = 'TRITON';
+    model.CAD.path  = '/model/fs9.stl';
+    model.CG        = [0.000985  0.0586417  0.494153];
+    [model.CAD.vert, model.CAD.faces] = TRITON();
+    model.lla_date  = lla_date;
+    model.lla_data  = lla_data;
+    model.ecl_data  = ecl_data;
+    model.sun_data  = sun_data;
     
-    
-    if Flag_prop == 1
-        q = q_data;
-    
-    else
-        % raising, OB1_part
-        q = [0.1600 0.7055 0.2057 0.6591];
-    
-    end
-    
-    string = 'OBRCS TH1 Raising';
-    component = 'OBRCS_1';
-    Flag = {Flag_prop, Flag_View, Flag_Ecp};
-    other = {GEO, sun_vec};
-    
+    model.q_trend_data = q_data;
+
+    % For TRITON, raising, OB1_part
+    model.q_des_data = [0.1600 0.7055 0.2057 0.6591];
+
+    model.component.name     = 'OBRCS1';
+    model.component.location = [-0.0217171  0.0199314  0.00846277];
+
+    % OBRCS1_location = [-0.0217171 0.0199314 0.00846277];
+    % OBRCS2_location = [-0.0237543 -0.0254843 -0.00591477];
+    % RCSDM1_location = [0.118926 0.033122 1.19889];
+
+
+
+    %% MODE:%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %  Run the ATTITUDE_animation function below to view the result
+    %
+    %  INPUT:
+    %   @mode     -->   1: ATT_sim
+    %                   2: ATT_file_prop
+    %                   3: ATT_orbit_wiz
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    mode = 1;
     
     % MAIN
-    [~, ~] = SAAS(q, component, Flag, other, string, dates{1});
+    [~, ~] = SAAS(mode, sim, model);
+
 
 
 end
-
-    
     

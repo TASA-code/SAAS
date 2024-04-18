@@ -1,13 +1,10 @@
-function [] = ATT_orbit_wiz(OE, dates)
+function [] = ATT_orbit_wiz(sim, model)
     
     fprintf('Simulation Propagating...\n')
     
-    global orbit;
-    % define physical constants
-    
     mu_E = 3.986004418e14;     % Earth gravitational parameter (m^3/s^2)    
     
-    [r_ECI, v_ECI] = OE2ECI(OE);
+    [r_ECI, v_ECI] = OE2ECI(sim.orbit.OE);
     
     % undimensionalise
     DU = norm(r_ECI);
@@ -15,15 +12,11 @@ function [] = ATT_orbit_wiz(OE, dates)
     
     r_undim = r_ECI/DU;
     v_undim = v_ECI/(DU/TU);
-
+    x0 = [r_undim' v_undim'];
     
     % define orbital period
     % undimensionlise with TU
-    T_0 = 2*pi*sqrt(OE(1)^3/mu_E)/TU;
-    tspan = [0 orbit*T_0];
-    
-    x0 = [r_undim' v_undim'];
-    
+    tspan = sim.orbit.tspan/TU;
     tol = odeset('RelTol',1e-8,'AbsTol',1e-8);
     [t,x] = ode45(@EoM,tspan,x0,tol);
     
@@ -31,7 +24,7 @@ function [] = ATT_orbit_wiz(OE, dates)
     v = [x(:,4), x(:,5), x(:,6)] * DU/TU;
 
 
-    epoch = datetime(dates, 'InputFormat', 'uuuu-DDD-HH:mm:ss.SSS', 'TimeZone', 'UTC');
+    epoch = datetime(model.lla_date(1), 'InputFormat', 'uuuu-DDD-HH:mm:ss.SSS', 'TimeZone', 'UTC');
     r_ecef = zeros(length(t),3);
 
     for i = 1:length(t)

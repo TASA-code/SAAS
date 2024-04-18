@@ -1,6 +1,6 @@
 function [OE] = getinput()
 
-    a_input = input('Enter SMA (m): ', 's');
+    a_input = input('Enter SMA (km): ', 's');
     a = str2double(strsplit(a_input));
     
     e_input = input('Enter eccentricity (-): ', 's');
@@ -18,6 +18,6 @@ function [OE] = getinput()
     theta_input = input('Enter true anomaly (deg): ', 's');
     theta = str2double(strsplit(theta_input));
 
-    OE = [a, e, i, RAAN, e, theta];
+    OE = [a, e, i, RAAN, w, theta];
 
 end
