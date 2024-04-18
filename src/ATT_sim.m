@@ -5,16 +5,13 @@
 %   Cooper Chang Chien
 %
 %   Input:
-%     @param Q            :  (1x4)     Quaternion applied to target vector
-%     @param component    :  (string)  Component wish to observe
-%     @param flag         :  (state)   0: animate without earth view cone
-%                                      1: animate with earth view cone
-%     @param string       :  (string)  Vector name 
+%     @param sim      :  (struct)  Simulation setups
+%     @param model    :  (struct)  Model parameter
 %
 %
 %   Output:
-%     animation based on imported data (on-orbit data), 
-%     display with attitude animation and groundtrack 
+%     Animation on Satellite attitude based on designed
+%       quaternion values 
 %
 %
 %   Copyright (C) System Engineering (SE), TASA - All Rights Reserved
@@ -26,8 +23,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-function [output, STR_TRACE] = ATT_sim(Q, component, flag, string)
+function [COMP_TRACE, STR_TRACE] = ATT_sim(sim, model)
     
+    Q = model.q_des_data;
+
+
     % Start animation build-up
     figure;
 
@@ -42,55 +42,49 @@ function [output, STR_TRACE] = ATT_sim(Q, component, flag, string)
 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %  PRE-STEP #1 : Construct THRUSTER vector
+    %  PRE-STEP #1 : Construct THRUSTER vector
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    [OBRCS1_DIR, OBRCS1_VEC] = OBRCS1();
-    [OBRCS2_DIR, OBRCS2_VEC] = OBRCS2();
-    [RCSDM1_DIR, RCSDM1_VEC] = RCSDM1();
-    [RCSDM2_DIR, RCSDM2_VEC] = RCSDM2();
-
-    % Store Thruster quaternion and vector
-    Thruster_q = {OBRCS1_DIR,OBRCS2_DIR,RCSDM1_DIR,RCSDM2_DIR};
-    Thruster_v = {OBRCS1_VEC,OBRCS2_VEC,RCSDM1_VEC,RCSDM2_VEC};
+    [COMP_DIR, COMP_VECTOR] = create_comp(model);
 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %  PRE-STEP #2 : Construct STR vector
+    %  PRE-STEP #2 : Construct STR vector
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    [STR_LOS, STR] = STR_coverage(flag);
+    [STR_LOS, STR] = STR_coverage(sim.flag.view);
     cone_handle = [];
 
+
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %  PRE-STEP #3 : Create simplified TRITON model
+    %  PRE-STEP #3 : Create simplified TRITON model
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    % Create simplified TRITON model
-    [vertices, faces] = FS9_SAR();
-    h_cube = patch('Vertices', vertices, 'Faces', faces, 'FaceColor', '#708090', 'EdgeColor', 'k', 'LineWidth', 1);
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    vertices = model.CAD.vert;
+    faces = model.CAD.faces;
+    h_cube = patch('Vertices', vertices, 'Faces', faces, 'FaceColor', '#708090', 'EdgeColor', 'k', 'LineWidth', 2);
 
 
-    %% Start vector rotation
-    % Set up animation parameters
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %  PRE-STEP #4 : Setup animation frame
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     frames = 20;
     angle_range = 2*acos(Q(1));  % Angle to rotate in radians
     theta = linspace(0, angle_range, frames);
     ax = quaternion(0,0,0,1);
     
-
-    OBRCS1_TRACE = zeros(frames,3);
-    OBRCS2_TRACE = zeros(frames,3);
-    RCSDM1_TRACE = zeros(frames,3);
-
     STR_TRACE    = zeros(frames,3);
+    COMP_TRACE   = zeros(frames,3);
 
+
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %  START SIMULATION
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     for frame = 1:length(theta)
 
-        
         % Update quaternion to simulate rotation
         % Slerp function:
         %   1. Interpolates between two quaternions based on the angle between them and the desired interpolation fraction.
@@ -102,30 +96,10 @@ function [output, STR_TRACE] = ATT_sim(Q, component, flag, string)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %  STEP #1 : Rotate Thruster vector using quaternion
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-        for i = 1:4
-
-            rotatad_THR = update_vector(q_rotation, Thruster_q{1,i}, Thruster_v{1,i}, 0.5);
-            % NOTE: 0.5 is just a factor for visualisation
-
-            switch component
-                case 'OBRCS_1'
-                    if i == 1
-                        OBRCS1_TRACE(frame,:) = [rotatad_THR(1), rotatad_THR(2), rotatad_THR(3)];
-                        scatter3(rotatad_THR(1), rotatad_THR(2), rotatad_THR(3),'LineWidth',2,'MarkerEdgeColor','k','MarkerFaceColor','b');
-                    end
-                case 'OBRCS_2'
-                    if i == 2
-                        OBRCS2_TRACE(frame,:) = [rotatad_THR(1), rotatad_THR(2), rotatad_THR(3)];
-                        scatter3(rotatad_THR(1), rotatad_THR(2), rotatad_THR(3),'LineWidth',2,'MarkerEdgeColor','k','MarkerFaceColor','b');
-                    end
-                case {'RCSDM_1', 'RCSDM_2'}
-                    if i == 3 
-                        RCSDM1_TRACE(frame,:) = [rotatad_THR(1), rotatad_THR(2), rotatad_THR(3)];
-                        scatter3(rotatad_THR(1), rotatad_THR(2), rotatad_THR(3),'LineWidth',2,'MarkerEdgeColor','k','MarkerFaceColor','r');
-                    end
-             end
-        end
+        
+        rotatad_COMP = update_vector(q_rotation, COMP_DIR, COMP_VECTOR, 0.5);
+        COMP_TRACE(frame,:) = [rotatad_COMP(1), rotatad_COMP(2), rotatad_COMP(3)];
+        scatter3(rotatad_COMP(1), rotatad_COMP(2), rotatad_COMP(3),'LineWidth',2,'MarkerEdgeColor','k','MarkerFaceColor','b');
         
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -134,8 +108,8 @@ function [output, STR_TRACE] = ATT_sim(Q, component, flag, string)
 
         % Rotate STR vector
         rotated_STR = update_vector(q_rotation, STR_LOS, STR, 1);
-        scatter3(rotated_STR(1), rotated_STR(2), rotated_STR(3),'LineWidth',1,'MarkerEdgeColor','k','MarkerFaceColor','#7E2F8E');
         STR_TRACE(frame,:) = [rotated_STR(1), rotated_STR(2), rotated_STR(3)];
+        scatter3(rotated_STR(1), rotated_STR(2), rotated_STR(3),'LineWidth',1,'MarkerEdgeColor','k','MarkerFaceColor','#7E2F8E');
         
 
         % Create cone for STR FOV
@@ -152,7 +126,7 @@ function [output, STR_TRACE] = ATT_sim(Q, component, flag, string)
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %  STEP #3 : Rotate TRITON model using quaternion
+        %  STEP #3 : Rotate model using quaternion
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         % Perform the rotation for TRITON
@@ -162,6 +136,7 @@ function [output, STR_TRACE] = ATT_sim(Q, component, flag, string)
         center = [0, 0, 0];  % Center of the cube
         cube_vertices = ((R * (vertices' - center') + center'))';
         set(h_cube, 'Vertices', cube_vertices, 'Faces', faces);
+
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %  STEP #4 : Rotate frame of axis
@@ -174,19 +149,9 @@ function [output, STR_TRACE] = ATT_sim(Q, component, flag, string)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         % Adjust axis limit according to animate option
-        view_setting(flag,string);
+        view_setting(sim.flag.view, model.component.name);
         drawnow;
 
     end
 
-    switch component
-        case 'OBRCS_1'
-            output = OBRCS1_TRACE;
-        case 'OBRCS_2'
-            output = OBRCS2_TRACE;
-        case {'RCSDM_1' , 'RCSDM_2'}
-            output = RCSDM1_TRACE;
-    end
-
-    % rotate3d off;
 end

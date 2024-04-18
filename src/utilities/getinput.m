@@ -1,6 +1,6 @@
 function [OE] = getinput()
 
-    a_input = input('Enter SMA (m): ', 's');
+    a_input = input('Enter SMA (km): ', 's');
     a = str2double(strsplit(a_input));
     
     e_input = input('Enter eccentricity (-): ', 's');
