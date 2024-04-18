@@ -1,7 +1,31 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%   SAAS ATT_orbit_wiz.m
+%
+%   Cooper Chang Chien
+%
+%   Input:
+%     @param sim      :  (struct)  Simulation setups
+%     @param model    :  (struct)  Model parameters
+%
+%
+%   Output:
+%     Simulate satellite orbit based on sim.orbit.OE 
+%
+%
+%   Copyright (C) System Engineering (SE), TASA - All Rights Reserved
+%
+%   This code is provided under the MIT License.
+%
+%   Written by Cooper Chang Chien <cooper@tasa.org.tw>, April 2024.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 function [] = ATT_orbit_wiz(sim, model)
     
+
     fprintf('Simulation Propagating...\n')
-    
     mu_E = 3.986004418e14;     % Earth gravitational parameter (m^3/s^2)    
     
 

@@ -1,6 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %   Satellite Attitude Animation and Simulator (quaternion)
+%   SAAS
 %
 %   Cooper Chang Chien
 %
@@ -9,14 +10,16 @@
 %   V.2.2  : 2024.03.14
 %   V.2.3  : 2024.03.18
 %   V.3.0  : 2024.04.17
+%   V.3.1  : 2024.04.18
 %
 %
 %   Input:
-%     @param Q            :  (1x4)     Quaternion applied to target vector
-%     @param component    :  (string)  Component wish to observe
-%     @param Flag         :  (1x3)     Flag_prop, Flag_view, Flag_eclipse
-%     @param other        :  (1x2)     Ground Track and Sun vector data
-%     @param string       :  (string)  Desired plot title 
+%     @param mode          :  (int)     1: ATT_sim
+%                                       2: ATT_file_prop
+%                                       3: ATT_orbit_wiz 
+%
+%     @param sim           :  (struct)  Simulation setups
+%     @param model         :  (struct)  Model parameters
 %
 %
 %   Output:

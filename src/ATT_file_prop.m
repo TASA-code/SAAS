@@ -1,12 +1,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%   SQAA ATT_file_prop.m
+%   SAAS ATT_file_prop.m
 %
 %   Cooper Chang Chien
 %
 %   Input:
 %     @param sim      :  (struct)  Simulation setups
-%     @param model    :  (struct)  Model parameter
+%     @param model    :  (struct)  Model parameters
 %
 %
 %   Output:
