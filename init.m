@@ -47,7 +47,8 @@ function init()
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     sim = {};
 
-    OE = [7000 1e-5 97.97 0 0 0];
+    OE = [6892 1e-5 97.46 340.3470 98.03756 0];
+
 
     sim.orbit.OE     = OE;
     sim.orbit.orbit  = 2;
@@ -80,7 +81,7 @@ function init()
     model.name      = 'TRITON';
     model.CAD.path  = '/model/fs9.stl';
     model.CG        = [0.000985  0.0586417  0.494153];
-    [model.CAD.vert, model.CAD.faces] = TRITON();
+    [model.CAD.vert, model.CAD.faces] = FS9_SAR();
     model.lla_date  = lla_date;
     model.lla_data  = lla_data;
     model.ecl_data  = ecl_data;
@@ -109,7 +110,7 @@ function init()
     %                   3: ATT_orbit_wiz
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    mode = 1;
+    mode = 3;
     
     % MAIN
     [~, ~] = SAAS(mode, sim, model);
