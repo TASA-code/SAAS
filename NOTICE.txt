@@ -1,0 +1,14 @@
+Copyright 2024 Cooper Chang Chien
+
+All rights reserved.
+
+LTTOP
+
+Author  : Cooper Chang Chien
+Contact : cp.changchien@gmail.com
+Github  : @cp-changchien
+Linkedin: https://www.linkedin.com/in/cooper-chang-chien/
+
+This project does not include any third-party software components.
+
+For more information about LTTOP, please visit my Github page.
