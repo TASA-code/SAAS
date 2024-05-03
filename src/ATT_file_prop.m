@@ -24,19 +24,30 @@
 
 
 function [] = ATT_file_prop(sim, model)
+
     
     Q = model.q_trend_data;
 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %  PRE-STEP #0 : Setup frame recording
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    filename = 'output/ATT_trend.mp4';
+    writerObj = VideoWriter(filename, 'MPEG-4');
+    open(writerObj);
+
+
     figure;
-    fig1 = subplot(4,4,1:8);
-    fig2 = subplot(4,4,9:16);
+    fig1 = subplot(4,4,[1 2 5 6 9 10 13 14]);
+    fig2 = subplot(4,4,[3 4 7 8]);
+    fig3 = subplot(4,4,[11 12 15 16]);
 
     subplot(fig1);
-    LVLH(1);
+    LVLH();
     % [bq, bvec] = BLVLH();
     hold on;
 
-    time_text = text('Position', [1.2, 1.6, 0]);
+    time_text = text('Position', [-0.476,-0.092,-1.03]);
 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -63,7 +74,7 @@ function [] = ATT_file_prop(sim, model)
 
     vertices = model.CAD.vert;
     faces = model.CAD.faces;
-    h_cube = patch('Vertices', vertices, 'Faces', faces, 'FaceColor', '#708090', 'EdgeColor', 'k', 'EdgeAlpha', 1, 'LineWidth', 2);
+    h_cube = patch('Vertices', vertices, 'Faces', faces, 'FaceColor', '#708090', 'EdgeColor', 'k', 'EdgeAlpha', 0.15, 'LineWidth', 0.5);
 
 
     for i = 1:length(Q)
@@ -122,10 +133,10 @@ function [] = ATT_file_prop(sim, model)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         set(time_text, 'String', datestr(model.lla_date(i)));
 
-        view([-132.28 20.51])
+        view([1.318e+02,17.36])
         grid on; box on;
         axis([-0.8 0.8 -0.8 0.8 -0.8 0.8]);
-        pbaspect([4.5 4.5 2])
+        pbaspect([1 1 1.5])
         set(gca, 'ZDir', 'reverse');
         set(gca, 'YDir', 'reverse');
         xlabel('LVLH.X'); ylabel('LVLH.Y'); zlabel('LVLH.Z');
@@ -138,10 +149,21 @@ function [] = ATT_file_prop(sim, model)
         end
 
         subplot(fig2);
+        scatter3(model.ECI_data(i,1), model.ECI_data(i,2), model.ECI_data(i,3),'.','k','LineWidth',2);
+        plot_globe();
+        hold on;
+
+        subplot(fig3);
         groundtrack(model.lla_data(i,:),colour);
         hold on;
 
-        drawnow;
-        
+
+        frame = getframe(gcf);
+        writeVideo(writerObj, frame);
+
+        drawnow; 
     end
+
+    close(writerObj)
+    disp('Trending File Propagation Completed!')
 end

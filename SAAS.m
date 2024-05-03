@@ -12,7 +12,6 @@
 %   V.3.0  : 2024.04.17
 %   V.3.1  : 2024.04.18
 %
-%
 %   Input:
 %     @param mode          :  (int)     1: ATT_sim
 %                                       2: ATT_file_prop
@@ -25,7 +24,6 @@
 %   Output:
 %     Details in ATT_sim.m, ATT_file_prop.m, and ATT_orbit_wiz.m
 %
-%
 %   Copyright (C) System Engineering (SE), TASA - All Rights Reserved
 %
 %   This code is provided under the MIT License.
@@ -34,7 +32,6 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% function [output, STR_TRACE] = SAAS(Q, component, Flag, other, string, dates)
 function [output, STR_TRACE] = SAAS(mode, sim, model)
     
     switch mode
@@ -42,11 +39,16 @@ function [output, STR_TRACE] = SAAS(mode, sim, model)
             [output, STR_TRACE] = ATT_sim(sim, model);
 
         case 2
-            ATT_file_prop(sim, model);
+            ATT_design(sim, model);
             output = [];
             STR_TRACE = [];
 
         case 3
+            ATT_file_prop(sim, model);
+            output = [];
+            STR_TRACE = [];
+
+        case 4
             ATT_orbit_wiz(sim, model);
             output = [];
             STR_TRACE = [];

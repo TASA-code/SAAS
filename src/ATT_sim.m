@@ -24,36 +24,52 @@
 
 
 function [COMP_TRACE, STR_TRACE] = ATT_sim(sim, model)
+
     
-    Q = model.q_des_data;
+    Q = model.q_des_data
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %  PRE-STEP #0 : Setup frame recording
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    filename = 'output/ATT_sim.mp4';
+    writerObj = VideoWriter(filename, 'MPEG-4');
+    open(writerObj);
 
 
     % Start animation build-up
     figure;
 
-    LVLH(1);
     hold on;
-    quiver3(0,0,0, -1, 0, 0, 'color', "#77AC30", 'LineWidth', 2,'Linestyle',':');
+    % quiver3(0,0,0, -1, 0, 0, 'color', "#77AC30", 'LineWidth', 2,'Linestyle',':');
     quiver3(0,0,0, Q(2), Q(3), Q(4), 'color', '#828282', 'LineWidth', 2,'Linestyle',':')
     rotate_quat = quaternion(Q(1), Q(2), Q(3), Q(4));
 
     % Construct rotated body axis
-    [bq, bvec] = BLVLH();
+    LVLH();
+    [bq, bvec] = BODY_AXIS();
 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %  PRE-STEP #1 : Construct THRUSTER vector
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    [COMP_DIR, COMP_VECTOR] = create_comp(model);
-
-
+    % [COMP_DIR, COMP_VECTOR] = create_comp(model);
+    % rot_vec = quiver3(0.198, -0.388, -0.01, -0.388, -0.198,-0.01, "LineWidth",3,'color','b');
+    
+    % COMP = {};
+    % [COMP.START_q, COMP.END_q, COMP.VEC] = create_comp([0.198, -0.388, -0.01], model);
+    
+    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %  PRE-STEP #2 : Construct STR vector
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    [STR_LOS, STR] = STR_coverage(sim.flag.view);
-    cone_handle = [];
+    [STR1_VEC, STR1_quiver] = STR(sim.flag.view, model.component.STR1);
+    cone_handle1 = [];
+
+    [STR2_VEC, STR2_quiver] = STR(sim.flag.view, model.component.STR2);
+    cone_handle2 = [];
 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -62,7 +78,7 @@ function [COMP_TRACE, STR_TRACE] = ATT_sim(sim, model)
 
     vertices = model.CAD.vert;
     faces = model.CAD.faces;
-    h_cube = patch('Vertices', vertices, 'Faces', faces, 'FaceColor', '#708090', 'EdgeColor', 'k', 'LineWidth', 2);
+    h_cube = patch('Vertices', vertices, 'Faces', faces, 'FaceColor', '#708090', 'EdgeColor', 'k', 'EdgeAlpha', 0.15, 'LineWidth', 0.5);
 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -72,7 +88,7 @@ function [COMP_TRACE, STR_TRACE] = ATT_sim(sim, model)
     frames = 20;
     angle_range = 2*acos(Q(1));  % Angle to rotate in radians
     theta = linspace(0, angle_range, frames);
-    ax = quaternion(0,0,0,1);
+    ax = quaternion(1,0,0,0);
     
     STR_TRACE    = zeros(frames,3);
     COMP_TRACE   = zeros(frames,3);
@@ -97,33 +113,19 @@ function [COMP_TRACE, STR_TRACE] = ATT_sim(sim, model)
         %  STEP #1 : Rotate Thruster vector using quaternion
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        rotatad_COMP = update_vector(q_rotation, COMP_DIR, COMP_VECTOR, 0.5);
-        COMP_TRACE(frame,:) = [rotatad_COMP(1), rotatad_COMP(2), rotatad_COMP(3)];
-        scatter3(rotatad_COMP(1), rotatad_COMP(2), rotatad_COMP(3),'LineWidth',2,'MarkerEdgeColor','k','MarkerFaceColor','b');
-        
+        % rotatad_COMP = update_vector(q_rotation, COMP_DIR, COMP_VECTOR, 0.5);
+        % COMP_TRACE(frame,:) = [rotatad_COMP(1), rotatad_COMP(2), rotatad_COMP(3)];
+        % scatter3(rotatad_COMP(1), rotatad_COMP(2), rotatad_COMP(3),'LineWidth',2,'MarkerEdgeColor','k','MarkerFaceColor','b');
+
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %  STEP #2 : Rotate STR vector and its FOV cone using quaternion
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        % Rotate STR vector
-        rotated_STR = update_vector(q_rotation, STR_LOS, STR, 1);
-        STR_TRACE(frame,:) = [rotated_STR(1), rotated_STR(2), rotated_STR(3)];
-        scatter3(rotated_STR(1), rotated_STR(2), rotated_STR(3),'LineWidth',1,'MarkerEdgeColor','k','MarkerFaceColor','#7E2F8E');
+        [STR_TRACE(frame,:), cone_handle1] = STR_update(q_rotation, STR1_VEC, STR1_quiver, cone_handle1);
         
-
-        % Create cone for STR FOV
-        [x_cone, y_cone, z_cone, M] = plot_cone(rotated_STR(1), rotated_STR(2), rotated_STR(3));
-
-        % Delete previous cone surface if it exists
-        if ~isempty(cone_handle)
-            delete(cone_handle);
-        end
+        [STR_TRACE(frame,:), cone_handle2] = STR_update(q_rotation, STR2_VEC, STR2_quiver, cone_handle2);
         
-        % Plot cone
-        cone_handle = surf(x_cone, y_cone, z_cone, 'Parent', hgtransform('Matrix', M), ...
-            'LineStyle', 'none', 'FaceColor', 'r', 'EdgeColor', 'none', 'FaceAlpha', 0.1);
-
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %  STEP #3 : Rotate model using quaternion
@@ -150,8 +152,12 @@ function [COMP_TRACE, STR_TRACE] = ATT_sim(sim, model)
 
         % Adjust axis limit according to animate option
         view_setting(sim.flag.view, model.component.name);
+        
+        temp = getframe(gcf);
+        writeVideo(writerObj, temp);
         drawnow;
-
     end
+    close(writerObj)
+    disp('Rotation Simulation Completed!')
 
 end
