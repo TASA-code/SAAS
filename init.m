@@ -39,12 +39,6 @@ function init()
     %     @param view --> animate with earth blockage cone
     %                            0 : no cone
     %                            1 : animate with cone
-    %     @param prop --> use imported data to animate
-    %                            0 : No (use single quaternion)
-    %                            1 : Yes, use sets of quaternion
-    %     @param ecl  --> determine the status of eclipse
-    %                            0 : No eclipse
-    %                            1 : Yes, in eclipse
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     sim = {};
 
@@ -56,7 +50,7 @@ function init()
 
     sim.orbit.beta_angle = deg2rad(-30);
 
-    sim.flag.view = 0;
+    sim.flag.view = 1;
     sim.flag.ecl  = ecl_data;
 
     
@@ -86,11 +80,11 @@ function init()
     model.lla_data  = lla_data;
     model.ecl_data  = ecl_data;
     model.sun_data  = sun_data;
-    % model.q_trend_data = q_data;
+    model.q_trend_data = q_data;
     
     %! [roll pitch yaw]
-    model.q_des_data = euler_to_quaternion([0 0 60]);
-    model.q_trend_data = q_design_eval([0, 0], sim.orbit.beta_angle);
+    model.q_sim_data = euler_to_quaternion([0 0 60]);
+    model.q_design_data = q_design_eval([0, -90], sim.orbit.beta_angle);
     
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -115,7 +109,7 @@ function init()
     %
     %  INPUT:
     %   @mode    -->  (int)   1: ATT_sim
-    %                         2: ATT_design
+    %                         2: ATT_design (for design purpose)
     %                         2: ATT_file_prop
     %                         3: ATT_orbit_wiz
     %
@@ -124,7 +118,7 @@ function init()
     mode = 1;
     
     % MAIN
-    initial_pos(sim, model)
+    % initial_pos(sim, model)
     [~, ~] = SAAS(mode, sim, model);
 
 

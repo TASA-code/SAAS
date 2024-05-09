@@ -1,16 +1,16 @@
 function [] = view_setting(flag,string)
 
     axis_limits = [-1 1 -1 1 -1 1 -1 1];
-    view([-2.270598883117190e+02,12.343293986035402])
+    view([60.045,16.76])
 
-    legend("LVLH","Rotation axis", "Body.x", "Body.y", "Body.z", ...
-             "COMP", "STR", 'Location', 'eastoutside');
+    legend("Rotation axis", "LVLH.X", "LVLH.Y", "LVLH.Z",...
+            "Body.x", "Body.y", "Body.z", ...
+            "STR_1", "STR_2", 'Location', 'eastoutside');
 
     if flag == 1 
-        axis_limits = [-1.5 1.5 -1.5 1.5 -1.5 1.5];
-        view([-137.67 15.61])
-        legend("LVLH","Rotation axis", "Body.x", "Body.y", "Body.z", ...
-                 "COMP", "Earth Blockage", "STR", 'Location', 'eastoutside');
+        legend("Rotation axis", "LVLH.X", "LVLH.Y", "LVLH.Z",...
+                "Body.x", "Body.y", "Body.z", ...
+                "Earth Blockage", "STR", 'Location', 'eastoutside');
     end
 
     grid on; box on;

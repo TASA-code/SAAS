@@ -15,7 +15,7 @@ body:
     attributes:
       label: Log
       description: request create log
-      placeholder: ex. name, email
+      placeholder: ex. name, date, time
     validations:
       required: false
   - type: textarea
