@@ -4,7 +4,7 @@ function [STR_LOS, STR_quiver] = STR(flag, component)
         Earth_half_cone_angle = asin(6378/6978)*57.26;
         cone_radius = tand(Earth_half_cone_angle);
         [earth_x, earth_y, earth_z] = cylinder([0, cone_radius]);
-        surf(earth_x, earth_y, earth_z, 'LineStyle', 'none', 'FaceAlpha', 0.2);
+        surf(earth_x, earth_y, earth_z, 'LineStyle', 'none', 'FaceAlpha', 0.2, 'FaceColor','#7E2F8E');
     end
 
     STR     = component{1,2} - component{1,3};

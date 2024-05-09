@@ -25,7 +25,7 @@
 function [] = ATT_design(sim, model)
 
     
-    Q = model.q_trend_data
+    Q = model.q_design_data
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %  PRE-STEP #0 : Setup frame recording
@@ -39,7 +39,7 @@ function [] = ATT_design(sim, model)
     figure;
 
     hold on;
-    [LVLH_q, LVLH_vec] = LVLH();
+    LVLH();
     % [bq, bvec] = BODY_AXIS();
 
     data_text = text('Position', [-0.476,-0.092,-1.03]);
@@ -76,7 +76,6 @@ function [] = ATT_design(sim, model)
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    pitch = linspace(0,-90,length(Q));
 
     for i = 1:length(Q)
 
@@ -98,19 +97,8 @@ function [] = ATT_design(sim, model)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %  STEP #3 : Rotate STR using quaternion
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        rotated_STR = update_vector(Q(i,:), STR_VEC, STR_quiver, 1);
-        
-        % Create cone for STR FOV
-        [x_cone, y_cone, z_cone, M] = plot_cone(rotated_STR(1), rotated_STR(2), rotated_STR(3));
+        [~, cone_handle] = STR_update(Q(i,:), STR_VEC, STR_quiver, cone_handle);
 
-        % Delete previous cone surface if it exists
-        if ~isempty(cone_handle)
-            delete(cone_handle);
-        end
-        
-        % Plot cone
-        cone_handle = surf(x_cone, y_cone, z_cone, 'Parent', hgtransform('Matrix', M), ...
-            'LineStyle', 'none', 'FaceColor', 'r', 'EdgeColor', 'none', 'FaceAlpha', 0.1);
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -127,16 +115,16 @@ function [] = ATT_design(sim, model)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %  STEP #5 : Rotate Body axis 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        for k = 1:3   
-            update_vector(euler_to_quaternion([0,pitch(i),0]), LVLH_q(k,:), LVLH_vec(k), 1);
-        end
+        % for k = 1:3   
+        %     update_vector(euler_to_quaternion([0,pitch(i),0]), LVLH_q(k,:), LVLH_vec(k), 1);
+        % end
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         set(data_text, 'String', num2str(Q(i,:)));
 
         view([60.045,16.76])
         grid on; box on;
-        axis([-0.8 0.8 -0.8 0.8 -0.8 0.8]);
+        axis([-1 1 -1 1 -1 1]);
         pbaspect([1 1 1])
         set(gca, 'ZDir', 'reverse');
         set(gca, 'YDir', 'reverse');

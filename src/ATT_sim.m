@@ -26,7 +26,7 @@
 function [COMP_TRACE, STR_TRACE] = ATT_sim(sim, model)
 
     
-    Q = model.q_des_data
+    Q = model.q_sim_data;
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %  PRE-STEP #0 : Setup frame recording
