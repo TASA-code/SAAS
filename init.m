@@ -22,48 +22,46 @@ function init()
     %        3. Sun vector
     %        4. Eclipse
     %
-    %% NOTE:%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %  Quaternions here are defined in a specific frame of reference 
-    %  Import LVLH2BODY quaternion 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % !NOTE:%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %!  Quaternions here are defined in a specific frame of reference 
+    %!  Import LVLH2BODY quaternion 
+    %!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-
     [~, q_data]          = import('fs7t_SE_SAAS_Q_2024050090000_2024051090000_A.txt',  '%s%f%f%f%f');
     [lla_date, lla_data] = import('fs7t_SE_SAAS_LATLON_2024050090000_2024051090000_A.txt', '%s%f%f');
     [~, sun_data]        = import('fs7t_SE_SAAS_SUN_2024050090000_2024051090000_A.txt',  '%s%f%f%f');
     [~, ecl_data]        = import('fs7t_SE_SAAS_Eclipse_2024050090000_2024051090000_A.txt',  '%s%f');
+    [~, ECI_data]        = import('fs7t_SE_SAAS_ECI_2024050090000_2024051090000_A.txt',  '%s%f%f%f');
 
-    
-    
     
     %% STEP #1:%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %  Flag to decide SQAA mode
-    %     @param Flag_view --> animate with earth blockage cone
+    %     @param view --> animate with earth blockage cone
     %                            0 : no cone
     %                            1 : animate with cone
-    %     @param Flag_prop --> use imported data to animate
+    %     @param prop --> use imported data to animate
     %                            0 : No (use single quaternion)
     %                            1 : Yes, use sets of quaternion
+    %     @param ecl  --> determine the status of eclipse
+    %                            0 : No eclipse
+    %                            1 : Yes, in eclipse
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     sim = {};
 
-    OE = [6892 1e-5 97.46 340.3470 98.03756 0];
-
-
-    sim.orbit.OE     = OE;
-    sim.orbit.orbit  = 2;
+    sim.orbit.OE     = [6892 1e-5 97.46 70 0 0];
+    sim.orbit.orbit  = 1;
     sim.orbit.period = 2*pi*sqrt((sim.orbit.OE(1)*1000)^3/3.986004418e14);
     sim.orbit.tspan  = [0 sim.orbit.orbit*sim.orbit.period];
     sim.orbit.time   = round(sim.orbit.tspan(2)/64);
 
+    sim.orbit.beta_angle = deg2rad(-30);
 
     sim.flag.view = 0;
-    sim.flag.prop = 1;
     sim.flag.ecl  = ecl_data;
 
     
-    %% DEFINE MODEL:%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %  Run the ATTITUDE_animation function below to view the result
+    %% DEFINE MODEL:%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %  Create and Define model parameter
     %
     %  INPUT:
     %   @param Q          -->  (1x4)     Quaternion applied to target vector
@@ -73,48 +71,61 @@ function init()
     %   THR_TRACE  :  Selected thruster vector trace
     %   STR_TRACE  :  Star Tracker vector trace
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    model = {};
+    
     q_data = q_data(2:16:sim.orbit.time*16,1:4);
 
-    % Create and Define model parameter
-    model = {};
 
-    model.name      = 'TRITON';
-    model.CAD.path  = '/model/fs9.stl';
-    model.CG        = [0.000985  0.0586417  0.494153];
-    [model.CAD.vert, model.CAD.faces] = FS9_SAR();
+    model.name      = 'FS9';
+    model.CAD.file  = 'fs9.stl';
+    % model.CAD.file  = 'fs9.stl';
+    model.CG        = [2.7717896e+00  1.8211494e+01  8.9988957e+02]; % (mm)
+    [model.CAD.vert, model.CAD.faces] = model_setup(model.CG, model.CAD.file, 0);
+    model.ECI_data  = ECI_data;
     model.lla_date  = lla_date;
     model.lla_data  = lla_data;
     model.ecl_data  = ecl_data;
     model.sun_data  = sun_data;
+    % model.q_trend_data = q_data;
     
-    model.q_trend_data = q_data;
+    %! [roll pitch yaw]
+    model.q_des_data = euler_to_quaternion([0 0 60]);
+    model.q_trend_data = q_design_eval([0, 0], sim.orbit.beta_angle);
+    
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    % For TRITON, raising, OB1_part
-    model.q_des_data = [0.1600 0.7055 0.2057 0.6591];
+    % model.component = {'name', position, offset}
 
-    model.component.name     = 'OBRCS1';
-    model.component.location = [-0.0217171  0.0199314  0.00846277];
+    model.component.STR1 = {'STR1',...
+                       [474.918, 479.593, 931.902],... 
+                       [473.641, 478.316, 934.298]};
 
-    % OBRCS1_location = [-0.0217171 0.0199314 0.00846277];
-    % OBRCS2_location = [-0.0237543 -0.0254843 -0.00591477];
-    % RCSDM1_location = [0.118926 0.033122 1.19889];
+    model.component.STR2 = {'STR2',... 
+                       [-486.347, 537.236, 332.014],...
+                       [-443.741, 494.732, 411.878]};
+        
 
+    model.component.name     = 'test';
+    model.component.location = [-0.388, -0.198,-0.01];
 
 
     %% MODE:%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %  Run the ATTITUDE_animation function below to view the result
     %
     %  INPUT:
-    %   @mode     -->   1: ATT_sim
-    %                   2: ATT_file_prop
-    %                   3: ATT_orbit_wiz
+    %   @mode    -->  (int)   1: ATT_sim
+    %                         2: ATT_design
+    %                         2: ATT_file_prop
+    %                         3: ATT_orbit_wiz
     %
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    mode = 3;
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    mode = 1;
     
     % MAIN
+    initial_pos(sim, model)
     [~, ~] = SAAS(mode, sim, model);
-
 
 
 end

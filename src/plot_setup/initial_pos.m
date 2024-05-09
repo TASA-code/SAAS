@@ -1,32 +1,32 @@
-function [] = initial_pos(flag)
+function [] = initial_pos(sim, model)
 
     figure;   
 
     hold on;
-    LVLH(0);
-    quiver3(0,0,0, -1, 0, 0, 'color', "#77AC30", 'LineWidth', 2,'Linestyle',':');
-    text(-1, 0, 0, '+V direction', 'HorizontalAlignment', 'right','FontWeight','bold');
+    LVLH();
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %  PRE-STEP #1 : Construct THRUSTER vector
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    OBRCS1();
-    OBRCS2();
-    RCSDM1();
-    RCSDM2();
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %  PRE-STEP #2 : Construct STR vector
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    [STR_LOS, ~] = STR_coverage(flag);
+    [STR_LOS1, ~] = STR(sim.flag.view, model.component.STR1);
+
+    [STR_LOS2, ~] = STR(sim.flag.view, model.component.STR2);
+
 
     % Plot cone
-    [x_cone, y_cone, z_cone, M] = plot_cone(STR_LOS(1), STR_LOS(2), STR_LOS(3));
-    surf(x_cone, y_cone, z_cone, 'Parent', hgtransform('Matrix', M), ...
+    [x_cone1, y_cone1, z_cone1, M1] = plot_cone(STR_LOS1(1), STR_LOS1(2), STR_LOS1(3));
+    surf(x_cone1, y_cone1, z_cone1, 'Parent', hgtransform('Matrix', M1), ...
         'LineStyle', 'none', 'FaceColor', 'r', 'EdgeColor', 'none', 'FaceAlpha', 0.1);
-
+        
+    [x_cone2, y_cone2, z_cone2, M2] = plot_cone(STR_LOS2(1), STR_LOS2(2), STR_LOS2(3));
+    surf(x_cone2, y_cone2, z_cone2, 'Parent', hgtransform('Matrix', M2), ...
+        'LineStyle', 'none', 'FaceColor', 'r', 'EdgeColor', 'none', 'FaceAlpha', 0.1);
+    
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %  PRE-STEP #3 : Construct TRITON model
@@ -34,32 +34,21 @@ function [] = initial_pos(flag)
     
 
     % Create simplified TRITON model
-    [vertices, faces] = FS9_SAR();
-    patch('Vertices', vertices, 'Faces', faces, 'FaceColor', '#708090', 'EdgeColor', 'k', 'LineWidth', 1.5);
+    vertices = model.CAD.vert;
+    faces = model.CAD.faces;
+    patch('Vertices', vertices, 'Faces', faces, 'FaceColor', '#708090', 'EdgeColor', 'k', 'EdgeAlpha', 0.15, 'LineWidth', 0.5);
 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
+    view([60.045,16.76])
     grid on; box on;
-    xlabel('Body.X'); ylabel('Body.Y'); zlabel('Body.Z');
-    title('Final Attitude (Bus Frame)')
-    axis_limits = [-1 1 -1 1 -1 1 -1 1];
-    view([42.77 34.77])
-
-    legend("Body axis","LVLH.x","OBRCS_1", "OBRCS_2", ...
-        "RCSDM_1", "RCSDM_2", "STR", 'Location', 'eastoutside');
-
-    if flag == 1
-        axis_limits = [-2.25 2.25 -2.25 2.25 -1.5 1.5];
-        legend(" Body axis","LVLH.x","OBRCS_1", "OBRCS_2", ...
-            "RCSDM_1", "RCSDM_2", "Earth Blockage", "STR", 'Location', 'eastoutside');
-    end
-
-
-    axis(axis_limits)
+    axis([-0.8 0.8 -0.8 0.8 -0.8 0.8]);
+    pbaspect([1 1 1])
     set(gca, 'ZDir', 'reverse');
     set(gca, 'YDir', 'reverse');
-    % leg.NumColumns = 3;
+    xlabel('LVLH.X'); ylabel('LVLH.Y'); zlabel('LVLH.Z');
+    title('Initial Attitude (Bus Frame)')
 
 
 end
