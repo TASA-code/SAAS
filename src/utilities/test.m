@@ -1,12 +1,12 @@
 clear;
 close all; clc;
-SA = [0; -1; 0];
+SA = [1; 0; 0];
 
 beta = deg2rad(-30);
 
 SUN = [cos(beta); sin(beta); 0];
 
-psi = deg2rad(0);
+psi = deg2rad(-90);
 
 
 R_pitch = [cos(psi)  0   sin(psi);
@@ -22,7 +22,7 @@ for i = 1:length(theta)
              sin(theta(i))  cos(theta(i))   0
              0           0            1 ];
 
-    temp(:,i) = R_yaw*R_pitch*SA;
+    temp(:,i) = R_pitch*R_yaw*SA;
 
 
     result(i) = dot(temp(:,i),SUN);
@@ -35,7 +35,6 @@ data = [rad2deg(psi)*ones(1,length(theta)); rad2deg(theta); result; temp]'
 [max_value, row_index] = min(abs(data(:,3)));
 max_row = data(row_index,:);
 disp(max_row)
-
 
 
 
@@ -62,14 +61,14 @@ grid on; box on;
 
 
 
-psi  = deg2rad(linspace(0, -90, 10));
-beta = deg2rad(-30*ones(1,length(psi)));
-theta = atan(-cos(psi)./tan(beta));
+% psi  = deg2rad(linspace(0, -90, 10));
+% beta = deg2rad(-30*ones(1,length(psi)));
+% theta = atan(-cos(psi)./tan(beta));
 
-figure()
-plot(rad2deg(psi), rad2deg(theta), 'linewidth',3)
-grid on
-box on
+% figure()
+% plot(rad2deg(psi), rad2deg(theta), 'linewidth',3)
+% grid on
+% box on
 
 
 

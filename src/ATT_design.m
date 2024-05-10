@@ -116,7 +116,7 @@ function [] = ATT_design(sim, model)
         %  STEP #5 : Rotate Body axis 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % for k = 1:3   
-        %     update_vector(euler_to_quaternion([0,pitch(i),0]), LVLH_q(k,:), LVLH_vec(k), 1);
+        %     update_vector(euler_to_quaternion([0,p(i),0]), LVLH_q(k,:), LVLH_vec(k), 1);
         % end
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,16 +1,16 @@
-function q_design = q_design_eval(pitch_span, beta)
+function q_design = q_design_eval(location, beta)
 
     % psi = deg2rad(pitch_span)
     % pitch_span = [pitch_start, pitch_end]
-    pitch = linspace(pitch_span(1), pitch_span(2), 20);
-    beta  = beta * ones(1,length(pitch));
+    psi = linspace(location(1), location(2), 20);
+    beta  = beta * ones(1,length(psi));
     % yaw = atan(-cos(pitch)./tan(beta))
 
-    q_design = zeros(length(pitch), 4);
+    q_design = zeros(length(psi), 4);
 
-    for i = 1:length(pitch)
-        yaw = atan(-cosd(pitch(i))/tan(beta(i)));
-        q_design(i,:) = euler_to_quaternion([0 pitch(i) rad2deg(yaw)]);
+    for i = 1:length(psi)
+        yaw = atan(-cosd(psi(i))/tan(beta(i)));
+        q_design(i,:) = euler_to_quaternion([0 0 rad2deg(yaw)]);
     end
 
 
