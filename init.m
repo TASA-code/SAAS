@@ -42,15 +42,15 @@ function init()
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     sim = {};
 
-    sim.orbit.OE     = [6892 1e-5 97.46 70 0 0];
-    sim.orbit.orbit  = 1;
+    sim.orbit.OE     = [6892 1e-5 97.46 120 0 90];
+    sim.orbit.orbit  = 200/360;
     sim.orbit.period = 2*pi*sqrt((sim.orbit.OE(1)*1000)^3/3.986004418e14);
     sim.orbit.tspan  = [0 sim.orbit.orbit*sim.orbit.period];
     sim.orbit.time   = round(sim.orbit.tspan(2)/64);
 
-    sim.orbit.beta_angle = deg2rad(-30);
+    sim.orbit.beta_angle = deg2rad(-15);
 
-    sim.flag.view = 1;
+    sim.flag.view = 0;
     sim.flag.ecl  = ecl_data;
 
     
@@ -72,7 +72,6 @@ function init()
 
     model.name      = 'FS9';
     model.CAD.file  = 'fs9.stl';
-    % model.CAD.file  = 'fs9.stl';
     model.CG        = [2.7717896e+00  1.8211494e+01  8.9988957e+02]; % (mm)
     [model.CAD.vert, model.CAD.faces] = model_setup(model.CG, model.CAD.file, 0);
     model.ECI_data  = ECI_data;
@@ -83,8 +82,8 @@ function init()
     model.q_trend_data = q_data;
     
     %! [roll pitch yaw]
-    model.q_sim_data = euler_to_quaternion([0 0 60]);
-    model.q_design_data = q_design_eval([0, -90], sim.orbit.beta_angle);
+    model.q_sim_data = euler_to_quaternion([0 -180 -60]);
+    [model.q_design_ECI, model.q_design_LVLH, model.design_energy_ratio] = q_design_eval([0, -240], sim.orbit.beta_angle, 240);
     
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

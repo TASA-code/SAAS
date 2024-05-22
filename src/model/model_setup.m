@@ -14,7 +14,7 @@ function [vertices, faces] = model_setup(CG, file_name, rotation)
     max_extent = max(max_extent);
 
     % Calculate the scaling factor
-    scaling_factor = 1.4 / max_extent;
+    scaling_factor = 1.8 / max_extent;
 
     % Scale model
     vertices = (vertices - CG) * scaling_factor;

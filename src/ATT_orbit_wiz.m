@@ -22,7 +22,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-function [] = ATT_orbit_wiz(sim, model)
+function [r, v] = ATT_orbit_wiz(sim, model)
     
 
     fprintf('Simulation Propagating...\n')
@@ -73,7 +73,7 @@ function [] = ATT_orbit_wiz(sim, model)
 
     lla = ecef2lla(r_ecef, 'WGS84');
 
-    orbit_plot(r, r_ecef, lla) 
+    % orbit_plot(r, r_ecef, lla) 
 
 end
 

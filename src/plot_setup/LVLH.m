@@ -13,6 +13,6 @@ function [quat, vec] = LVLH()
   vec(2) = quiver3(0,0,0, 0, 1, 0, 'color', "k", 'LineWidth', 3,'Linestyle','-.');
   vec(3) = quiver3(0,0,0, 0, 0, 1, 'color', "k", 'LineWidth', 3,'Linestyle','-.');
 
-  text(vec(1).UData, vec(1).VData, vec(1).WData, '+V dir','HorizontalAlignment','right','FontWeight','bold');
+  text(vec(1).UData, vec(1).VData, vec(1).WData, '+V dir','HorizontalAlignment','left','FontWeight','bold');
 
 end

@@ -145,7 +145,7 @@ function [COMP_TRACE, STR_TRACE] = ATT_sim(sim, model)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         for i = 1:3   
-            update_vector(q_rotation, bq(i,:), bvec(i), 0.5);
+            update_vector(q_rotation, bq(i,:), bvec(i), 0.5,'');
         end
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -49,7 +49,7 @@ function [output, STR_TRACE] = SAAS(mode, sim, model)
             STR_TRACE = [];
 
         case 4
-            ATT_orbit_wiz(sim, model);
+            [~, ~] = ATT_orbit_wiz(sim, model);
             output = [];
             STR_TRACE = [];
     end

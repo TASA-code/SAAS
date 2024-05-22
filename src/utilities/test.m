@@ -1,12 +1,12 @@
 clear;
 close all; clc;
-SA = [1; 0; 0];
+SA = [0; -1; 0];
 
 beta = deg2rad(-30);
 
 SUN = [cos(beta); sin(beta); 0];
 
-psi = deg2rad(-90);
+psi = deg2rad(0);
 
 
 R_pitch = [cos(psi)  0   sin(psi);
@@ -26,15 +26,19 @@ for i = 1:length(theta)
 
 
     result(i) = dot(temp(:,i),SUN);
+    
 end
 
 
 data = [rad2deg(psi)*ones(1,length(theta)); rad2deg(theta); result; temp]'
 
 
-[max_value, row_index] = min(abs(data(:,3)));
+[max_value, row_index] = max(abs(data(:,3)));
 max_row = data(row_index,:);
 disp(max_row)
+
+energy = dot([temp(1,row_index),temp(2,row_index),temp(3,row_index)],SUN)
+
 
 
 
@@ -73,21 +77,21 @@ grid on; box on;
 
 
 
-% syms theta psi beta real;
+syms theta psi beta real;
 
-% R_pitch = [cos(psi)  0   sin(psi)
-%          0           1   0 
-%          -sin(psi)   0   cos(psi)];
+R_pitch = [cos(psi)  0   sin(psi)
+           0         1   0 
+          -sin(psi)  0   cos(psi)];
 
-% R_yaw = [cos(theta) -sin(theta)   0
-%          sin(theta)  cos(theta)   0
-%          0           0            1 ];
+R_yaw = [cos(theta) -sin(theta)   0
+         sin(theta)  cos(theta)   0
+         0           0            1 ];
 
-% temp = R_pitch * R_yaw * [0;-1;0];
+temp = R_pitch * R_yaw * [0; -1; 0];
 
-% dot_prod = dot(temp,[cos(beta); sin(beta); 0]);
-% expr = diff(dot_prod, theta)
+dot_prod = dot(temp,[cos(beta); sin(beta); 0])
 
+expr = diff(dot_prod, theta)
 
 
 

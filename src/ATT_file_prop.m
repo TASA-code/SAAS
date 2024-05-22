@@ -43,9 +43,10 @@ function [] = ATT_file_prop(sim, model)
     fig3 = subplot(4,4,[11 12 15 16]);
 
     subplot(fig1);
-    LVLH();
+ 
     % [bq, bvec] = BLVLH();
     hold on;
+    LVLH();
 
     time_text = text('Position', [-0.476,-0.092,-1.03]);
 
@@ -54,7 +55,7 @@ function [] = ATT_file_prop(sim, model)
     %  PRE-STEP #1 : Construct THRUSTER vector
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    [COMP_DIR, COMP_VECTOR] = create_comp(model);
+    [COMP_DIR, COMP_VECTOR] = create_comp([0,0,0], model);
 
 
     SUN_VEC = model.sun_data;
@@ -65,7 +66,7 @@ function [] = ATT_file_prop(sim, model)
     %  PRE-STEP #2 : Construct STR vector
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    [STR_LOS, STR] = STR_coverage(sim.flag.view);
+    [STR_LOS, STR] = STR(sim.flag.view);
     cone_handle = [];
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
