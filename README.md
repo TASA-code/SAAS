@@ -13,7 +13,7 @@ while plotting groundtrack data.
 <p align="center">
   <img src="output/ATT_design.gif" width="350">
   <img src="output/ATT_sim.gif" width="350">
-  <img src="output/ATT_trend.png" width="350">
+  <img src="output/ATT_trend.gif" width="350">
 </p>
 
 
