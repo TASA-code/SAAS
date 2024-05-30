@@ -23,10 +23,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-function [] = ATT_file_prop(sim, model)
+function [] = ATT_file_prop(MODEL)
 
     
-    Q = model.q_trend_data;
+    Q = MODEL.TREND.QUAT_TREND;
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %  PRE-STEP #0 : Setup frame recording
@@ -55,27 +55,30 @@ function [] = ATT_file_prop(sim, model)
     %  PRE-STEP #1 : Construct THRUSTER vector
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    [COMP_DIR, COMP_VECTOR] = create_comp([0,0,0], model);
+    % [COMP_DIR, COMP_VECTOR] = create_comp([0,0,0], model);
 
 
-    SUN_VEC = model.sun_data;
+    SUN_VEC = MODEL.TREND.SUN;
     SUN = quiver3(0,0,0,SUN_VEC(1),SUN_VEC(2),SUN_VEC(3),'color','#EDB120', 'LineWidth', 2);
 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %  PRE-STEP #2 : Construct STR vector
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    [STR1_VEC, STR1_quiver] = STR(MODEL.OPTION, MODEL.COMPONENT.STR1);
+    cone_handle1 = [];
 
-    [STR_LOS, STR] = STR(sim.flag.view);
-    cone_handle = [];
+    [STR2_VEC, STR2_quiver] = STR(MODEL.OPTION, MODEL.COMPONENT.STR2);
+    cone_handle2 = [];
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %  PRE-STEP #3 : Create model
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    vertices = model.CAD.vert;
-    faces = model.CAD.faces;
-    h_cube = patch('Vertices', vertices, 'Faces', faces, 'FaceColor', '#708090', 'EdgeColor', 'k', 'EdgeAlpha', 0.15, 'LineWidth', 0.5);
+    vertices = MODEL.CAD.vert;
+    faces    = MODEL.CAD.faces;
+    h_cube   = patch('Vertices', vertices, 'Faces', faces, 'FaceColor', '#708090', 'EdgeColor', 'k', 'EdgeAlpha', 0.15, 'LineWidth', 0.5);
 
 
     for i = 1:length(Q)
@@ -85,7 +88,7 @@ function [] = ATT_file_prop(sim, model)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %  STEP #1 : Rotate COMP using quaternion
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        update_vector(Q(i,:), COMP_DIR, COMP_VECTOR, 0.5);
+        % update_vector(Q(i,:), COMP_DIR, COMP_VECTOR, 0.5);
         
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -97,20 +100,10 @@ function [] = ATT_file_prop(sim, model)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %  STEP #3 : Rotate STR using quaternion
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        rotated_STR = update_vector(Q(i,:), STR_LOS, STR, 1);
+        [~, cone_handle1] = STR_update(Q(i,:), STR1_VEC, STR1_quiver, cone_handle1);
         
-        % Create cone for STR FOV
-        [x_cone, y_cone, z_cone, M] = plot_cone(rotated_STR(1), rotated_STR(2), rotated_STR(3));
-
-        % Delete previous cone surface if it exists
-        if ~isempty(cone_handle)
-            delete(cone_handle);
-        end
+        [~, cone_handle2] = STR_update(Q(i,:), STR2_VEC, STR2_quiver, cone_handle2);
         
-        % Plot cone
-        cone_handle = surf(x_cone, y_cone, z_cone, 'Parent', hgtransform('Matrix', M), ...
-            'LineStyle', 'none', 'FaceColor', 'r', 'EdgeColor', 'none', 'FaceAlpha', 0.1);
-
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %  STEP #4 : Rotate TRITON model using quaternion
@@ -132,30 +125,30 @@ function [] = ATT_file_prop(sim, model)
         % end
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        set(time_text, 'String', datestr(model.lla_date(i)));
+        set(time_text, 'String', datestr(MODEL.TREND.LLA_DATE(i)));
 
         view([1.318e+02,17.36])
         grid on; box on;
-        axis([-0.8 0.8 -0.8 0.8 -0.8 0.8]);
+        axis([-1 1 -1 1 -1 1]);
         pbaspect([1 1 1.5])
         set(gca, 'ZDir', 'reverse');
         set(gca, 'YDir', 'reverse');
         xlabel('LVLH.X'); ylabel('LVLH.Y'); zlabel('LVLH.Z');
         title(string)
 
-        if sim.flag.ecl(i) == 1
+        if MODEL.TREND.ECLIPSE(i) == 1
             colour = 'r';
         else
             colour = 'b';
         end
 
         subplot(fig2);
-        scatter3(model.ECI_data(i,1), model.ECI_data(i,2), model.ECI_data(i,3),'.','k','LineWidth',2);
+        scatter3(MODEL.TREND.ECI(i,1), MODEL.TREND.ECI(i,2), MODEL.TREND.ECI(i,3),'.','k','LineWidth',2);
         plot_globe();
         hold on;
 
         subplot(fig3);
-        groundtrack(model.lla_data(i,:),colour);
+        groundtrack(MODEL.TREND.LLA(i,:),colour);
         hold on;
 
 

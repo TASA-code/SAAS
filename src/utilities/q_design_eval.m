@@ -1,5 +1,5 @@
 function [q_design_ECI, q_design_LVLH, energy] = q_design_eval(location, beta, interval)
-    
+
     location = deg2rad(location);
     psi = linspace(location(1), location(2), interval);
 

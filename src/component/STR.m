@@ -7,7 +7,7 @@ function [STR_LOS, STR_quiver] = STR(flag, component)
         surf(earth_x, earth_y, earth_z, 'LineStyle', 'none', 'FaceAlpha', 0.2, 'FaceColor','#7E2F8E');
     end
 
-    STR     = component{1,2} - component{1,3};
+    STR     = component(1,:) - component(2,:);
 
     % STR_LOS = [0  -0.642787609686539 -0.766044443118978];
     % STR_LOS    = quaternion(0, STR1(1), STR1(2), STR1(3));

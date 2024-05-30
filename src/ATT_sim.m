@@ -16,17 +16,17 @@
 %
 %   Copyright (C) System Engineering (SE), TASA - All Rights Reserved
 %
-%   This code is provided under the MIT License.
+%   This code is provided under the Apache License.
 %
 %   Written by Cooper Chang Chien <cooper@tasa.org.tw>, January 2024.
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-function [COMP_TRACE, STR_TRACE] = ATT_sim(sim, model)
+function [COMP_TRACE, STR_TRACE] = ATT_sim(MODEL)
 
     
-    Q = model.q_sim_data;
+    Q = MODEL.VALUE.QUAT;
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %  PRE-STEP #0 : Setup frame recording
@@ -41,7 +41,6 @@ function [COMP_TRACE, STR_TRACE] = ATT_sim(sim, model)
     figure;
 
     hold on;
-    % quiver3(0,0,0, -1, 0, 0, 'color', "#77AC30", 'LineWidth', 2,'Linestyle',':');
     quiver3(0,0,0, Q(2), Q(3), Q(4), 'color', '#828282', 'LineWidth', 2,'Linestyle',':')
     rotate_quat = quaternion(Q(1), Q(2), Q(3), Q(4));
 
@@ -65,19 +64,19 @@ function [COMP_TRACE, STR_TRACE] = ATT_sim(sim, model)
     %  PRE-STEP #2 : Construct STR vector
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    [STR1_VEC, STR1_quiver] = STR(sim.flag.view, model.component.STR1);
+    [STR1_VEC, STR1_quiver] = STR(MODEL.OPTION, MODEL.COMPONENT.STR1);
     cone_handle1 = [];
 
-    [STR2_VEC, STR2_quiver] = STR(sim.flag.view, model.component.STR2);
+    [STR2_VEC, STR2_quiver] = STR(MODEL.OPTION, MODEL.COMPONENT.STR2);
     cone_handle2 = [];
 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %  PRE-STEP #3 : Create simplified TRITON model
+    %  PRE-STEP #3 : Create simplified model
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    vertices = model.CAD.vert;
-    faces = model.CAD.faces;
+    vertices = MODEL.CAD.vert;
+    faces = MODEL.CAD.faces;
     h_cube = patch('Vertices', vertices, 'Faces', faces, 'FaceColor', '#708090', 'EdgeColor', 'k', 'EdgeAlpha', 0.15, 'LineWidth', 0.5);
 
 
@@ -151,7 +150,7 @@ function [COMP_TRACE, STR_TRACE] = ATT_sim(sim, model)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         % Adjust axis limit according to animate option
-        view_setting(sim.flag.view, model.component.name);
+        view_setting(MODEL.OPTION, ' ');
         
         temp = getframe(gcf);
         writeVideo(writerObj, temp);

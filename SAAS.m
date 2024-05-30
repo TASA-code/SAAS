@@ -32,26 +32,22 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [output, STR_TRACE] = SAAS(mode, sim, model)
+function [output, STR_TRACE] = SAAS(MODEL)
     
-    switch mode
-        case 1
-            [output, STR_TRACE] = ATT_sim(sim, model);
+    switch MODEL.MODE
+        case 'simulation'
+            [output, STR_TRACE] = ATT_sim(MODEL);
 
-        case 2
-            ATT_design(sim, model);
+        case 'design'
+            ATT_design(MODEL);
             output = [];
             STR_TRACE = [];
 
-        case 3
-            ATT_file_prop(sim, model);
+        case 'propagation'
+            ATT_file_prop(MODEL);
             output = [];
             STR_TRACE = [];
 
-        case 4
-            [~, ~] = ATT_orbit_wiz(sim, model);
-            output = [];
-            STR_TRACE = [];
     end
 
 end

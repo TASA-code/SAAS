@@ -1,4 +1,8 @@
-function [vertices, faces] = model_setup(CG, file_name, rotation)
+function [vertices, faces] = model_setup(model, rotation)
+
+    CG = model.CG;
+    file_name = model.CAD_FILE;
+
 
     % Load the STL file
     model = stlread(file_name);
@@ -42,6 +46,5 @@ function [vertices, faces] = model_setup(CG, file_name, rotation)
     % zlabel('Z');
     % set(gca, 'ZDir', 'reverse');
     % set(gca, 'XDir', 'reverse');
-    % view([-16.2, 21.0526])
 
 end
