@@ -11,9 +11,9 @@ while plotting groundtrack data.
 
 # Results
 <p align="center">
-  <img src="output/OBRCS1_raise.gif" width="350">
-  <img src="output/propagate.gif" width="350">
-  <img src="output/simulate.png" width="350">
+  <img src="output/ATT_design.gif" width="350">
+  <img src="output/ATT_sim.gif" width="350">
+  <img src="output/ATT_trend.png" width="350">
 </p>
 
 
