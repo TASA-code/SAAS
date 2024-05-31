@@ -48,7 +48,7 @@ function ATT_file_prop(MODEL)
     hold on;
     LVLH();
 
-    time_text = text('Position', [-0.476,-0.092,-1.03]);
+    time_text = text('Position', [0.164,0.866,-1.375]);
 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -78,7 +78,7 @@ function ATT_file_prop(MODEL)
 
     vertices = MODEL.MODEL.CAD.vert;
     faces    = MODEL.MODEL.CAD.faces;
-    h_cube   = patch('Vertices', vertices, 'Faces', faces, 'FaceColor', '#708090', 'EdgeColor', 'k', 'EdgeAlpha', 0.15, 'LineWidth', 0.5);
+    h_cube   = patch('Vertices', vertices, 'Faces', faces, 'FaceColor', '#708090', 'EdgeColor', 'k', 'EdgeAlpha', 0.05, 'LineWidth', 0.5);
 
 
     for i = 1:length(Q)

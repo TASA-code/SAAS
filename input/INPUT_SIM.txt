@@ -27,8 +27,8 @@ END
 
 VALUE
         DESIGN         1
-        FRAME          'LVLH'
-        QUAT_DESIGN   [0, -240, 10]
+        FRAME          'ECI'
+        QUAT_DESIGN   [0, -240, 50]
         QUAT_SINGLE   []
         QUAT_PROF     'QUAT_PROFILE.txt'
 END
