@@ -15,7 +15,7 @@ function init()
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % MAIN
 
-    MODEL = READ_INPUT('INPUT_PROP.txt');
+    MODEL = READ_INPUT('INPUT_SIM.txt');
     structdisp(MODEL)
     
     SAAS(MODEL);
