@@ -23,10 +23,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-function [] = ATT_file_prop(MODEL)
+function ATT_file_prop(MODEL)
 
     
-    Q = MODEL.TREND.QUAT_TREND;
+    Q = MODEL.TREND.QUAT;
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %  PRE-STEP #0 : Setup frame recording
@@ -66,18 +66,18 @@ function [] = ATT_file_prop(MODEL)
     %  PRE-STEP #2 : Construct STR vector
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    [STR1_VEC, STR1_quiver] = STR(MODEL.OPTION, MODEL.COMPONENT.STR1);
+    [STR1_VEC, STR1_quiver] = STR(MODEL.OPTION.STR_VIEW, MODEL.COMPONENT.STR1);
     cone_handle1 = [];
 
-    [STR2_VEC, STR2_quiver] = STR(MODEL.OPTION, MODEL.COMPONENT.STR2);
+    [STR2_VEC, STR2_quiver] = STR(MODEL.OPTION.STR_VIEW, MODEL.COMPONENT.STR2);
     cone_handle2 = [];
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %  PRE-STEP #3 : Create model
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    vertices = MODEL.CAD.vert;
-    faces    = MODEL.CAD.faces;
+    vertices = MODEL.MODEL.CAD.vert;
+    faces    = MODEL.MODEL.CAD.faces;
     h_cube   = patch('Vertices', vertices, 'Faces', faces, 'FaceColor', '#708090', 'EdgeColor', 'k', 'EdgeAlpha', 0.15, 'LineWidth', 0.5);
 
 
@@ -125,7 +125,7 @@ function [] = ATT_file_prop(MODEL)
         % end
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        set(time_text, 'String', datestr(MODEL.TREND.LLA_DATE(i)));
+        set(time_text, 'String', datestr(MODEL.TREND.DATE(i)));
 
         view([1.318e+02,17.36])
         grid on; box on;
@@ -136,7 +136,7 @@ function [] = ATT_file_prop(MODEL)
         xlabel('LVLH.X'); ylabel('LVLH.Y'); zlabel('LVLH.Z');
         title(string)
 
-        if MODEL.TREND.ECLIPSE(i) == 1
+        if MODEL.TREND.ECLI(i) == 1
             colour = 'r';
         else
             colour = 'b';

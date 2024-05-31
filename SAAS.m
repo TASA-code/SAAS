@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%   Satellite Attitude Animation and Simulator (quaternion)
+%   Satellite Attitude Animation and Simulation (quaternion)
 %   SAAS
 %
 %   Cooper Chang Chien
@@ -11,42 +11,35 @@
 %   V.2.3  : 2024.03.18
 %   V.3.0  : 2024.04.17
 %   V.3.1  : 2024.04.18
+%   V.4.0  : 2024.05.29
 %
 %   Input:
-%     @param mode          :  (int)     1: ATT_sim
-%                                       2: ATT_file_prop
-%                                       3: ATT_orbit_wiz 
 %
-%     @param sim           :  (struct)  Simulation setups
-%     @param model         :  (struct)  Model parameters
+%     @param MODEL         :  (struct)  Model parameters
 %
 %
 %   Output:
-%     Details in ATT_sim.m, ATT_file_prop.m, and ATT_orbit_wiz.m
+%     Details in ATT_sim.m, ATT_file_prop.m, and ATT_design.m
 %
 %   Copyright (C) System Engineering (SE), TASA - All Rights Reserved
 %
-%   This code is provided under the MIT License.
+%   This code is provided under the Apache License.
 %
 %   Written by Cooper Chang Chien <cooper@tasa.org.tw>, January 2024.
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [output, STR_TRACE] = SAAS(MODEL)
+function SAAS(MODEL)
     
     switch MODEL.MODE
         case 'simulation'
-            [output, STR_TRACE] = ATT_sim(MODEL);
+            ATT_sim(MODEL);
 
-        case 'design'
-            ATT_design(MODEL);
-            output = [];
-            STR_TRACE = [];
+        % case 'design'
+        %     ATT_design(MODEL);
 
         case 'propagation'
             ATT_file_prop(MODEL);
-            output = [];
-            STR_TRACE = [];
 
     end
 

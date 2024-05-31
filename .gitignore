@@ -1,0 +1,6 @@
+*.xlsx
+*.pdf
+*.mp4
+docs/
+.vscode/
+.DS_Store

@@ -25,7 +25,6 @@
 function [] = ATT_design(MODEL)
 
 
-
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %  PRE-STEP #0 : Setup frame recording
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -51,16 +50,11 @@ function [] = ATT_design(MODEL)
     quiver3(0,0,0,cos(BETA_ANGLE),sin(BETA_ANGLE),0,"LineWidth",3,'color',"#EDB120")
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %  PRE-STEP #1 : Construct THRUSTER vector
+    %  PRE-STEP #1 : Construct OBSERV vector
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    % [COMP_DIR, COMP_VECTOR] = create_comp(model);
-    
-    % SA_START = [1,-0.3,0];
-    % SA_END = [0,-1,0];
+    [COMP_VEC, COMP_QUIVER] = create_comp(MODEL);
 
-    % SA_VEC = quiver3(SA_START(1), SA_START(2), SA_START(3), SA_END(1), SA_END(2), SA_END(3),"LineWidth",2,'color',"b", 'LineStyle','-.');
-    
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %  PRE-STEP #2 : Construct STR vector
@@ -76,8 +70,8 @@ function [] = ATT_design(MODEL)
     %  PRE-STEP #3 : Create model
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    vertices = MODEL.CAD.vert;
-    faces = MODEL.CAD.faces;
+    vertices = MODEL.MODEL.CAD.vert;
+    faces = MODEL.MODEL.CAD.faces;
     model = patch('Vertices', vertices, 'Faces', faces, 'FaceColor', '#708090', 'EdgeColor', 'k', 'EdgeAlpha', 0.15, 'LineWidth', 0.5);
 
     subplot(fig2)
@@ -88,20 +82,18 @@ function [] = ATT_design(MODEL)
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    [Q, Q_LVLH, energy] = q_design_eval([0, -240], BETA_ANGLE, 100);
+    [Q, Q_LVLH, energy] = q_design_eval([0, -240], BETA_ANGLE, 50);
+    [MODEL.RESULT.Q, MODEL.RESULT.Q_LVLH, MODEL.RESULT.ENERGY] = deal(Q, Q_LVLH, energy);
+    
 
     for i = 1:length(Q)
 
         subplot(fig1);
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %  STEP #1 : Rotate COMP using quaternion
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % update_vector(Q(i,:), COMP_DIR, COMP_VECTOR, 0.5);
-        % rot_start = quaternion_rotate([0.198, -0.388, -0.01],Q(i,:));
-        % rot_end   = quaternion_rotate([-0.388, -0.198,-0.01], Q(i,:));
-        % set(rot_vec, 'XData', rot_start(1), 'YData', rot_start(2), 'ZData', rot_start(3),...
-        %          'UData', rot_end(1), 'VData', rot_end(2), 'WData', rot_end(3));
-        
+        update_vector(Q(i,:), COMP_VEC, COMP_QUIVER, 0.5, '');
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %  STEP #2 : Rotate STR using quaternion
@@ -109,7 +101,6 @@ function [] = ATT_design(MODEL)
         [~, cone_handle]  = STR_update(Q(i,:), STR_VEC, STR_quiver, cone_handle);
         
         [~, cone_handle2] = STR_update(Q(i,:), STR2_VEC, STR2_quiver, cone_handle2);
-
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %  STEP #3 : Rotate TRITON model using quaternion
@@ -132,16 +123,6 @@ function [] = ATT_design(MODEL)
             end
         end
 
-        % origin_vec = quaternion_rotate(SA_START, Q(i,:));
-        % final_vec  = quaternion_rotate(SA_END, Q(i,:));
-        
-        % SA_VEC.XData = origin_vec(1)*0.3;
-        % SA_VEC.YData = origin_vec(2)*0.3;
-        % SA_VEC.ZData = origin_vec(3)*0.3;
-        % SA_VEC.UData = final_vec(1)*0.3;
-        % SA_VEC.VData = final_vec(2)*0.3;
-        % SA_VEC.WData = final_vec(3)*0.3;
-
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         view([60.045,16.76])
@@ -153,7 +134,7 @@ function [] = ATT_design(MODEL)
         xlabel('X'); ylabel('Y'); zlabel('Z');
         title('Body to ECI rotation')
 
-
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         subplot(fig2);
         
@@ -192,8 +173,7 @@ function [] = ATT_design(MODEL)
 
     end
 
-    
-
     close(writerObj)
     disp('Propagation Completed!')
+
 end
