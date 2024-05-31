@@ -1,6 +1,5 @@
 {
-    "cSpell.words": [
-        "groundtrack",
-        "OBSERV"
-    ]
+    "[latex]": {
+      "editor.wordWrap": "on"
+    }
 }

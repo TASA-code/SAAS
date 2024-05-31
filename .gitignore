@@ -1,7 +1,7 @@
 *.xlsx
 *.pdf
 *.mp4
-docs/
+docs/*
 !docs/main.pdf
 .vscode/
 .DS_Store
