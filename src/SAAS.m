@@ -1,4 +1,4 @@
-function init()
+function SAAS()
 
     clear; %#ok<CLEAR0ARGS>
     close all; clc
@@ -18,7 +18,7 @@ function init()
     MODEL = READ_INPUT('INPUT_SIM.txt');
     structdisp(MODEL)
     
-    SAAS(MODEL);
+    init(MODEL);
 
 end
     

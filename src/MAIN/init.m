@@ -29,7 +29,7 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function SAAS(MODEL)
+function init(MODEL)
     
     switch MODEL.MODE
         case 'simulation'
