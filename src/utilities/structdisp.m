@@ -15,7 +15,7 @@ function structdisp(s, indent)
             fprintf('%s%s: \t%s\n', indent, field, value);
         elseif isnumeric(value) && ismatrix(value) || isdatetime(value)
             [rows, cols] = size(value);
-            if rows <= 3
+            if rows < 2
                 fprintf('%s%s: \t%s\n', indent, field, mat2str(value));
             else
                 fprintf('%s%s: \t[%dx%d %s]\n', indent, field, rows, cols, class(value));
