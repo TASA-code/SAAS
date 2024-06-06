@@ -1,5 +1,5 @@
 # Satellite Attitude Animation and Simulator
-## (SAAS v.1)
+## (SAAS v.1.0-beta.1)
 Satellite Attitude Animation and Simulator (SAAS) is a tool that simulates satellite attitude describe by quaternions,
 and has the capability of inputting on-orbit data to animate actual behaviour, 
 while plotting groundtrack data.
