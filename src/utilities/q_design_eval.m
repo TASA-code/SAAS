@@ -35,31 +35,5 @@ function [q_design_ECI, q_design_LVLH, energy] = q_design_eval(location, beta, i
 
     fprintf('Orbit SA energy percentage:\t%.2f%%\n\n', energy_ratio);
 
-
-
-
-    % % test = [linspace(0,-25,num); linspace(0,-30,num); linspace(60,65,num)]'
-    % num = 30;
-    % test = [linspace(0,0,num); linspace(0,-90,num); linspace(60,0,num)]';
-    % temp = zeros(length(test),4);
-    
-    % % euler_to_quaternion([yaw pitch roll])
-    % for i = 1:length(temp)
-    %     temp(i,:) = euler_to_quaternion(test(i,:));
-    % end
-
-    % % test1 = [linspace(0,0,num); linspace(0,-90,num); linspace(60,0,num)]';
-    % % temp1 = zeros(length(test1),4);
-    
-    % % % euler_to_quaternion([yaw pitch roll])
-    % % for i = 1:length(temp1)
-    % %     temp1(i,:) = euler_to_quaternion(test1(i,:));
-    % % end
-
-
-    % q_design = [temp]
-
-
-
 end
 
