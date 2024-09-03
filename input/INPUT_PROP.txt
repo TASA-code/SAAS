@@ -1,0 +1,34 @@
+TITLE INPUT_PROP.txt
+
+MODE  propagation
+MODEL 
+        NAME        FS9
+        CG         [2.7717896e+00  1.8211494e+01  8.9988957e+02]
+        OFF        [0 0 0]
+        CAD FILE   'model/fs9_SADA.stl'
+END 
+ENV
+        BETA_ANGLE 15
+END
+COMPONENT 
+        STR1    [474.918, 479.593, 931.902]
+                [473.641, 478.316, 934.298]
+        STR2    [-486.347, 537.236, 332.014]
+                [-443.741, 494.732, 411.878]
+        USER    [-0.388, -0.198,-0.01]
+                [0, 0, 0]
+END
+OPTION
+        STR_VIEW   0
+END
+TREND
+        QUAT        'fs7t_SE_SAAS_Q_2024050090000_2024051090000_A.txt'
+        ECI         'fs7t_SE_SAAS_ECI_2024050090000_2024051090000_A.txt'
+        LLA         'fs7t_SE_SAAS_LATLON_2024050090000_2024051090000_A.txt'
+        ECLIPSE     'fs7t_SE_SAAS_Eclipse_2024050090000_2024051090000_A.txt'
+        SUN         'fs7t_SE_SAAS_SUN_2024050090000_2024051090000_A.txt'
+END
+
+
+
+

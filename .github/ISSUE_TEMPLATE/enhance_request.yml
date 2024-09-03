@@ -1,0 +1,61 @@
+name: Enhancement request
+description: File a enhance request 
+title: "[Enhancement]: "
+labels: ["enhance", "triage"]
+projects: ["SAAS"]
+assignees:
+  - octocat
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this enhancement request!
+  - type: input
+    id: contact
+    attributes:
+      label: Log
+      description: request create log
+      placeholder: ex. name, date, time
+    validations:
+      required: false
+  - type: textarea
+    id: enhance-description
+    attributes:
+      label: Enhancement Description
+      description: Describe the enhancement needed.
+      placeholder: Explain the enhancement you'd like to see implemented.
+      value: "I would like to request the enhancement of an issue."
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this enhancement?
+      options:
+        - Low
+        - Medium
+        - High
+      default: 1
+    validations:
+      required: true
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impact
+      description: What impact would this enhancement have on your experience?
+      options:
+        - Minor
+        - Moderate
+        - Major
+      default: 1
+    validations:
+      required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this feature request, you agree to follow our [Code of Conduct](https://example.com)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

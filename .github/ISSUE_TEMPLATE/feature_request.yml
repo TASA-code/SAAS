@@ -1,0 +1,67 @@
+name: Feature request
+description: File a request for a new feature
+title: "[Feature Request]: "
+labels: ["feature", "triage"]
+projects: ["SAAS"]
+assignees:
+  - octocat
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this feature request!
+  - type: input
+    id: contact
+    attributes:
+      label: Log
+      description: Issue create log
+      placeholder: ex. name, date, time
+    validations:
+      required: false
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Feature Description
+      description: Describe the new feature you would like to request.
+      placeholder: Explain the feature you'd like to see implemented.
+      value: "I would like to request the addition of a new feature."
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Low
+        - Medium
+        - High
+      default: 1
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use Case
+      description: How would you use this feature in your workflow?
+      placeholder: Describe a scenario where this feature would be useful.
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impact
+      description: What impact would this feature have on your experience?
+      options:
+        - Minor
+        - Moderate
+        - Major
+      default: 1
+    validations:
+      required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this feature request, you agree to follow our [Code of Conduct](https://example.com)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
