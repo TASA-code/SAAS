@@ -1,7 +1,0 @@
-*.xlsx
-*.pdf
-*.mp4
-.vscode/
-docs/*
-!docs/main.pdf
-.DS_Store
