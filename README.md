@@ -1,5 +1,6 @@
 # Satellite Attitude Animation and Simulator
 ## (SAAS v.1.0-beta.1)
+
 Satellite Attitude Animation and Simulator (SAAS) is a tool that simulates satellite attitude describe by quaternions,
 and has the capability of inputting on-orbit data to animate actual behaviour, 
 while plotting groundtrack data.
@@ -16,18 +17,19 @@ TITLE INPUT_SIM.txt
 MODE  simulation
 MODEL 
         NAME    FS9
-        CG     [2.7717896e+00  1.8211494e+01  8.9988957e+02]
-        FILE   'model/fs9_SADA.stl'
+        CG     [CG_x CG_y CG_z]
+        OFF    [OFF_x OFF_y OFF_z]
+        FILE   'model/model.stl'
 END
 ENV
         BETA_ANGLE 15
 END
 COMPONENT 
-        STR1    [474.918, 479.593, 931.902]
-                [473.641, 478.316, 934.298]
-        STR2    [-486.347, 537.236, 332.014]
-                [-443.741, 494.732, 411.878]
-        USER    [-0.388, -0.198,-0.01]
+        STR1    [start_x start_y start_z]
+                [end_x end_y end_z]
+        STR2    [start_x start_y start_z]
+                [end_x end_y end_z]
+        USER    [start_x start_y start_z]
                 [0, 0, 0]
 END
 OPTION
